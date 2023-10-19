@@ -9,6 +9,7 @@ import { BuildManager } from 'managers/build';
 import { HarvestManager } from 'managers/harvest';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
+import { PortManager } from 'managers/port';
 import { SpawnManager } from 'managers/spawn';
 import { TowerManager } from 'managers/tower';
 import { UpgradeManager } from 'managers/upgrade';
@@ -38,6 +39,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     new MemoryManager(),
     new TowerManager(roomService),
     new HarvestManager(roomService, creepService),
+    new PortManager(roomService, creepService),
     new UpgradeManager(roomService, creepService),
     new BuildManager(roomService, creepService),
     new OperationManager(roomService, creepService)

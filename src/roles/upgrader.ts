@@ -3,33 +3,34 @@
  * @module
  */
 
+import { withdrawEnergy } from 'roles/actions';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
-  HarvestEnergy = 1,
+  WithdrawEnergy = 1,
   UpgradeController = 2
 }
 
 export function run(creep: Creep) {
   if (!creep.hasState()) {
-    creep.setState(State.HarvestEnergy);
+    creep.setState(State.WithdrawEnergy);
   }
 
   switch (creep.memory.state) {
-    case State.HarvestEnergy:
-      runHarvestEnergy(creep);
+    case State.WithdrawEnergy:
+      runWithdrawEnergy(creep);
       break;
     case State.UpgradeController:
       runUpgradeController(creep);
       break;
     default:
       logUnknownState(creep);
-      creep.setState(State.HarvestEnergy);
+      creep.setState(State.WithdrawEnergy);
       break;
   }
 }
 
-function runHarvestEnergy(creep: Creep) {
+function runWithdrawEnergy(creep: Creep) {
   if (creep.isFull) {
     creep.say('🙏Upgrade');
     creep.setState(State.UpgradeController);
@@ -37,17 +38,14 @@ function runHarvestEnergy(creep: Creep) {
     return;
   }
 
-  const source = creep.room.find(FIND_SOURCES)?.[0];
-  if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-    creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
-  }
+  withdrawEnergy(creep);
 }
 
 function runUpgradeController(creep: Creep) {
   if (!creep.store[RESOURCE_ENERGY]) {
     creep.say('⚡Harvest');
-    creep.setState(State.HarvestEnergy);
-    runHarvestEnergy(creep);
+    creep.setState(State.WithdrawEnergy);
+    runWithdrawEnergy(creep);
     return;
   }
 

@@ -1,14 +1,14 @@
 /**
- * A creep role that constructs structures.
+ * A creep role responsible for transporting energy.
  * @module
  */
 
-import { withdrawEnergy } from 'roles/actions';
+import * as Actions from 'roles/actions';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
   WithdrawEnergy = 1,
-  BuildConstruction = 2
+  TransferEnergy = 2
 }
 
 export function run(creep: Creep) {
@@ -20,8 +20,8 @@ export function run(creep: Creep) {
     case State.WithdrawEnergy:
       runWithdrawEnergy(creep);
       break;
-    case State.BuildConstruction:
-      runBuildConstruction(creep);
+    case State.TransferEnergy:
+      runTransferEnergy(creep);
       break;
     default:
       logUnknownState(creep);
@@ -32,27 +32,22 @@ export function run(creep: Creep) {
 
 function runWithdrawEnergy(creep: Creep) {
   if (creep.isFull) {
-    creep.say('🔨Build');
-    creep.setState(State.BuildConstruction);
-    runBuildConstruction(creep);
+    creep.say('💫Transfer');
+    creep.setState(State.TransferEnergy);
+    runTransferEnergy(creep);
     return;
   }
 
-  withdrawEnergy(creep);
+  Actions.withdrawEnergy(creep);
 }
 
-function runBuildConstruction(creep: Creep) {
+function runTransferEnergy(creep: Creep) {
   if (!creep.store[RESOURCE_ENERGY]) {
     creep.say('💰Withdraw');
     creep.setState(State.WithdrawEnergy);
-    runWithdrawEnergy(creep);
+    Actions.withdrawEnergy(creep);
     return;
   }
 
-  const constructionSite = creep.room.find(FIND_CONSTRUCTION_SITES)?.[0];
-  if (constructionSite) {
-    if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
-    }
-  }
+  Actions.transferEnergy(creep);
 }
