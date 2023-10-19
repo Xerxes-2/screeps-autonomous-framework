@@ -39,9 +39,6 @@ export class TowerManager extends Manager {
       if (closestHostile) {
         tower.attack(closestHostile);
       }
-    }
-
-    for (const tower of towersWithEnergy) {
       const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: structure => structure.structureType !== STRUCTURE_WALL && structure.hits < structure.hitsMax
       });
