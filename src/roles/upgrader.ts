@@ -43,7 +43,7 @@ function runWithdrawEnergy(creep: Creep) {
 
 function runUpgradeController(creep: Creep) {
   if (!creep.store[RESOURCE_ENERGY]) {
-    creep.say('⚡Harvest');
+    creep.say('💰Withdraw');
     creep.setState(State.WithdrawEnergy);
     runWithdrawEnergy(creep);
     return;

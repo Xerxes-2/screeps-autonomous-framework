@@ -29,7 +29,7 @@ export class HarvestManager extends Manager {
 
   public run(pri: Priority) {
     if (pri === Priority.Low) {
-      this.creepService.runCreeps(Role.Harvester, Harvester.run);
+      this.creepService.runCreepRoles(Role.Harvester, Harvester.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {

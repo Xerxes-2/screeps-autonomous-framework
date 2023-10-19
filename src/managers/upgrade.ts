@@ -29,7 +29,7 @@ export class UpgradeManager extends Manager {
 
   run(pri: Priority) {
     if (pri === Priority.Low) {
-      this.creepService.runCreeps(Role.Upgrader, Upgrader.run);
+      this.creepService.runCreepRoles(Role.Upgrader, Upgrader.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
@@ -55,6 +55,22 @@ export class UpgradeManager extends Manager {
     const ordered = getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
 
     if (active + ordered === 0) {
+      const order = new Order();
+      const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
+      order.body = getHeavyWorkerBody(maxTier);
+      order.priority = Priority.Standard;
+      order.memory = {
+        role: Role.Upgrader,
+        target: controller.id,
+        tier: maxTier
+      };
+      orderCreep(controller.room, order);
+    }
+    // if all containers are full, spawn a new upgrader
+    const containers: StructureContainer[] = room.find(FIND_STRUCTURES, {
+      filter: s => s.structureType === STRUCTURE_CONTAINER
+    });
+    if (containers.filter(c => c.store.getFreeCapacity() > 0).length === 0) {
       const order = new Order();
       const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
       order.body = getHeavyWorkerBody(maxTier);

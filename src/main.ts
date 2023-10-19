@@ -7,6 +7,7 @@ import { LogLevel } from 'enums/logLevel';
 import { Priority } from 'enums/priority';
 import { BuildManager } from 'managers/build';
 import { HarvestManager } from 'managers/harvest';
+// import { IdleManager } from 'managers/idle';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
 import { PortManager } from 'managers/port';
@@ -43,6 +44,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     new UpgradeManager(roomService, creepService),
     new BuildManager(roomService, creepService),
     new OperationManager(roomService, creepService)
+    // new IdleManager(creepService)
   ];
 
   const priorityList = [Priority.Critical, Priority.Important, Priority.Standard, Priority.Low, Priority.Trivial];

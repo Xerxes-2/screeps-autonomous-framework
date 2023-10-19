@@ -31,7 +31,7 @@ export function run(creep: Creep) {
 
 function runHarvestEnergy(creep: Creep) {
   if (creep.isFull) {
-    creep.say('💫Transfer');
+    creep.say('📥Discharge');
     creep.setState(State.TransferEnergy);
     runDischargeEnergy(creep);
     return;

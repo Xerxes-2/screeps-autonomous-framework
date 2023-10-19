@@ -46,12 +46,20 @@ export class CreepService {
    * @param role The role that will be used to find relavent creeps.
    * @param creepRunMethod The method that will be used to run tasks.
    */
-  public runCreeps(role: Role, creepRunMethod: Function) {
+  public runCreepRoles(role: Role, creepRunMethod: Function) {
     const creepsWithRole = this.getAllOfRole(role);
     if (!creepsWithRole) {
       return;
     }
     for (const creep of creepsWithRole) {
+      if (this.creepShouldRun(creep)) {
+        creepRunMethod(creep);
+      }
+    }
+  }
+
+  public runCreeps(creeps: Creep[], creepRunMethod: Function) {
+    for (const creep of creeps) {
       if (this.creepShouldRun(creep)) {
         creepRunMethod(creep);
       }
@@ -64,7 +72,12 @@ export class CreepService {
    * @param target (optional) The target of creeps to be fetched.
    * @param homeroom (optional) The home room of creeps to be fetched.
    */
-  public getCreeps(role: Role | null = null, target: string | null = null, homeroom: string | null = null) {
+  public getCreeps(
+    role: Role | null = null,
+    target: string | null = null,
+    homeroom: string | null = null,
+    includeBusy = true
+  ) {
     const creeps: Creep[] = [];
 
     if (role !== null) {
@@ -74,7 +87,8 @@ export class CreepService {
       for (const creep of this.creepDictionary[role]!) {
         if (
           (target === null || creep.memory.target === target) &&
-          (homeroom === null || creep.memory.homeroom === homeroom)
+          (homeroom === null || creep.memory.homeroom === homeroom) &&
+          (includeBusy || !creep.hasState())
         ) {
           creeps.push(creep);
         }

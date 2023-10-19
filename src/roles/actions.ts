@@ -16,7 +16,9 @@ export function transferEnergy(creep: Creep) {
     if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
     }
+    return true;
   }
+  return false;
 }
 
 export function withdrawEnergy(creep: Creep) {
@@ -32,5 +34,7 @@ export function withdrawEnergy(creep: Creep) {
     if (creep.withdraw(bank, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       creep.moveTo(bank, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
+    return true;
   }
+  return false;
 }

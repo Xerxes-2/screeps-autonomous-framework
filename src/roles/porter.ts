@@ -17,6 +17,7 @@ export function run(creep: Creep) {
   }
 
   switch (creep.memory.state) {
+    case undefined:
     case State.WithdrawEnergy:
       runWithdrawEnergy(creep);
       break;
@@ -42,12 +43,15 @@ function runWithdrawEnergy(creep: Creep) {
 }
 
 function runTransferEnergy(creep: Creep) {
-  if (!creep.store[RESOURCE_ENERGY]) {
+  if (creep.store.getFreeCapacity()) {
     creep.say('💰Withdraw');
     creep.setState(State.WithdrawEnergy);
     Actions.withdrawEnergy(creep);
     return;
   }
 
-  Actions.transferEnergy(creep);
+  if (!Actions.transferEnergy(creep)) {
+    // creep.say('💤Sleep');
+    // creep.delState();
+  }
 }

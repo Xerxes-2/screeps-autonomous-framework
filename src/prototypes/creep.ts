@@ -10,6 +10,8 @@ declare global {
     hasState(state?: number): boolean;
     /** Changes the current state (task) for a creep. */
     setState(state: number): void;
+    /** Delete current state (task) for a creep */
+    delState(): void;
 
     /** @private */
     _states?: number[];
@@ -42,4 +44,8 @@ Creep.prototype.setState = function (state) {
   }
   this._states.push(state);
   this.memory.state = state;
+};
+
+Creep.prototype.delState = function () {
+  this.memory.state = undefined;
 };

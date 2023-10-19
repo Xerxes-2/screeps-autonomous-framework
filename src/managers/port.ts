@@ -29,7 +29,7 @@ export class PortManager extends Manager {
 
   public run(pri: Priority): void {
     if (pri === Priority.Low) {
-      this.creepService.runCreeps(Role.Porter, Porter.run);
+      this.creepService.runCreepRoles(Role.Porter, Porter.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
@@ -50,7 +50,10 @@ export class PortManager extends Manager {
     const active = this.creepService.getCreeps(Role.Porter).length;
     const ordered = getCreepsInQueue(room, Role.Porter);
 
-    if (active + ordered === 0) {
+    const rcl = room.controller?.level || 0;
+    const max = rcl < 4 ? 1 : 2;
+
+    if (active + ordered < max) {
       const order = new Order();
       const maxTier = getMaxTierSimpleWorker(room.energyCapacityAvailable);
       order.body = getSimpleWorkerBody(maxTier);

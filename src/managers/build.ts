@@ -29,7 +29,7 @@ export class BuildManager extends Manager {
 
   public run(pri: Priority) {
     if (pri === Priority.Low) {
-      this.creepService.runCreeps(Role.Builder, Builder.run);
+      this.creepService.runCreepRoles(Role.Builder, Builder.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
