@@ -52,8 +52,11 @@ function runDischargeEnergy(creep: Creep) {
     runHarvestEnergy(creep);
     return;
   }
+  let targetStructure: AnyStructure | undefined | null = getTargetSinks(creep).find(
+    s => s.store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store[RESOURCE_ENERGY]
+  );
 
-  const targetStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+  targetStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
     filter: structure =>
       structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
   });
@@ -65,28 +68,13 @@ function runDischargeEnergy(creep: Creep) {
   }
 }
 
-// function runTransferEnergy(creep: Creep) {
-//   if (!creep.store[RESOURCE_ENERGY]) {
-//     creep.say('⚡Harvest');
-//     creep.setState(State.HarvestEnergy);
-//     runHarvestEnergy(creep);
-//     return;
-//   }
-
-//   const targetStructure = creep.room.find(FIND_STRUCTURES, {
-//     filter: structure =>
-//       (structure.structureType === STRUCTURE_EXTENSION ||
-//         structure.structureType === STRUCTURE_SPAWN ||
-//         structure.structureType === STRUCTURE_TOWER) &&
-//       structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-//   })?.[0];
-
-//   if (targetStructure) {
-//     if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-//       creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
-//     }
-//   }
-// }
+function getTargetSinks(creep: Creep) {
+  const source = getTargetSource(creep);
+  if (!source) {
+    return [];
+  }
+  return creep.room.getSourceSinks(source.id);
+}
 
 function getTargetSource(creep: Creep) {
   if (!creep.memory.source && creep.memory.target) {

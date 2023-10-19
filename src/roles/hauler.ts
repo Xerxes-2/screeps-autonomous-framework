@@ -7,31 +7,31 @@ import * as Actions from 'roles/actions';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
-  WithdrawEnergy = 1,
+  HaulEnergy = 1,
   TransferEnergy = 2
 }
 
 export function run(creep: Creep) {
   if (!creep.hasState()) {
-    creep.setState(State.WithdrawEnergy);
+    creep.setState(State.HaulEnergy);
   }
 
   switch (creep.memory.state) {
     case undefined:
-    case State.WithdrawEnergy:
-      runWithdrawEnergy(creep);
+    case State.HaulEnergy:
+      runHaulEnergy(creep);
       break;
     case State.TransferEnergy:
       runTransferEnergy(creep);
       break;
     default:
       logUnknownState(creep);
-      creep.setState(State.WithdrawEnergy);
+      creep.setState(State.HaulEnergy);
       break;
   }
 }
 
-function runWithdrawEnergy(creep: Creep) {
+function runHaulEnergy(creep: Creep) {
   if (creep.isFull) {
     creep.say('💫Transfer');
     creep.setState(State.TransferEnergy);
@@ -39,14 +39,22 @@ function runWithdrawEnergy(creep: Creep) {
     return;
   }
 
-  Actions.withdrawEnergy(creep);
+  const sinks = creep.room.getAllSinks();
+  const leastFreeSink = _.sortBy(sinks, s => s.store.getFreeCapacity()).shift();
+  if (leastFreeSink) {
+    if (creep.withdraw(leastFreeSink, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+      creep.moveTo(leastFreeSink, { visualizePathStyle: { stroke: '#ffaa00' } });
+    }
+    return true;
+  }
+  return false;
 }
 
 function runTransferEnergy(creep: Creep) {
   if (!creep.store.getUsedCapacity()) {
     creep.say('💰Withdraw');
-    creep.setState(State.WithdrawEnergy);
-    Actions.withdrawEnergy(creep);
+    creep.setState(State.HaulEnergy);
+    runHaulEnergy(creep);
     return;
   }
 

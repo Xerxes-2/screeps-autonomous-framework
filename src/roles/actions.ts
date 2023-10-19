@@ -13,7 +13,10 @@ export function transferEnergy(creep: Creep) {
   });
   if (!targetStructure) {
     const banks: StructureContainer[] = creep.room.find(FIND_STRUCTURES, {
-      filter: structure => structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity() > 0
+      filter: structure =>
+        structure.structureType === STRUCTURE_CONTAINER &&
+        !creep.room.getAllSinks().includes(structure) &&
+        structure.store.getFreeCapacity() > 0
     });
     targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
   }
