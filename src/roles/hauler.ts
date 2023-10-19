@@ -43,7 +43,7 @@ function runWithdrawEnergy(creep: Creep) {
 }
 
 function runTransferEnergy(creep: Creep) {
-  if (creep.store.getFreeCapacity()) {
+  if (!creep.store.getUsedCapacity()) {
     creep.say('💰Withdraw');
     creep.setState(State.WithdrawEnergy);
     Actions.withdrawEnergy(creep);

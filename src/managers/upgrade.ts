@@ -54,23 +54,10 @@ export class UpgradeManager extends Manager {
     const active = this.creepService.getCreeps(Role.Upgrader, controller.id).length;
     const ordered = getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
 
-    if (active + ordered === 0) {
-      const order = new Order();
-      const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
-      order.body = getHeavyWorkerBody(maxTier);
-      order.priority = Priority.Standard;
-      order.memory = {
-        role: Role.Upgrader,
-        target: controller.id,
-        tier: maxTier
-      };
-      orderCreep(controller.room, order);
-    }
-    // if all containers are full, spawn a new upgrader
-    const containers: StructureContainer[] = room.find(FIND_STRUCTURES, {
-      filter: s => s.structureType === STRUCTURE_CONTAINER
-    });
-    if (containers.filter(c => c.store.getFreeCapacity() > 0).length === 0) {
+    const rcl = room.controller?.level || 0;
+    const maxUpgraderCount = rcl < 3 ? 2 : 3;
+
+    if (active + ordered < maxUpgraderCount) {
       const order = new Order();
       const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
       order.body = getHeavyWorkerBody(maxTier);

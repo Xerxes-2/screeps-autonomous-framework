@@ -15,7 +15,7 @@ import { getHaulerBody, getMaxTierHauler } from 'utils/profile';
  * associated tasks within the framework.
  */
 
-export class HauleManager extends Manager {
+export class HaulManager extends Manager {
   private roomService: RoomService;
   private creepService: CreepService;
 
@@ -51,7 +51,7 @@ export class HauleManager extends Manager {
     const ordered = getCreepsInQueue(room, Role.Hauler);
 
     const rcl = room.controller?.level || 0;
-    const max = rcl < 4 ? 1 : 2;
+    const max = rcl < 3 ? 1 : 2;
 
     if (active + ordered < max) {
       const order = new Order();

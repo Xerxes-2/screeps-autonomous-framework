@@ -8,7 +8,7 @@ import { Priority } from 'enums/priority';
 import { BuildManager } from 'managers/build';
 import { HarvestManager } from 'managers/harvest';
 // import { IdleManager } from 'managers/idle';
-import { HauleManager } from 'managers/haule';
+import { HaulManager } from 'managers/haul';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
 import { SpawnManager } from 'managers/spawn';
@@ -40,7 +40,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     new MemoryManager(),
     new TowerManager(roomService),
     new HarvestManager(roomService, creepService),
-    new HauleManager(roomService, creepService),
+    new HaulManager(roomService, creepService),
     new UpgradeManager(roomService, creepService),
     new BuildManager(roomService, creepService),
     new OperationManager(roomService, creepService)

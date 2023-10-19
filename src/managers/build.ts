@@ -49,8 +49,9 @@ export class BuildManager extends Manager {
   private orderBuilder(room: Room) {
     const active = this.creepService.getCreeps(Role.Builder).length;
     const ordered = getCreepsInQueue(room, Role.Builder);
+    const buildSites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-    if (active + ordered === 0) {
+    if (active + ordered === 0 && buildSites.length > 0) {
       const order = new Order();
       const maxTier = getMaxTierSimpleWorker(room.energyCapacityAvailable);
       order.body = getSimpleWorkerBody(maxTier);
