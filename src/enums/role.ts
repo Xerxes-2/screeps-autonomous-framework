@@ -8,5 +8,7 @@ export enum Role {
   Harvester = 0,
   Upgrader = 1,
   Builder = 2,
-  Porter = 3
+  Hauler = 3,
+  Claimer = 4,
+  SpawnBuilder = 5
 }

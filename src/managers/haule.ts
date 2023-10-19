@@ -2,11 +2,11 @@ import { Order } from 'classes/order';
 import { Priority } from 'enums/priority';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
-import * as Porter from 'roles/porter';
+import * as Porter from 'roles/hauler';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getMaxTierSimpleWorker, getSimpleWorkerBody } from 'utils/profile';
+import { getHaulerBody, getMaxTierHauler } from 'utils/profile';
 
 /**
  * The `PortManager` class orchestrates the energy transferring activities and behaviors of the bot.
@@ -15,21 +15,21 @@ import { getMaxTierSimpleWorker, getSimpleWorkerBody } from 'utils/profile';
  * associated tasks within the framework.
  */
 
-export class PortManager extends Manager {
+export class HauleManager extends Manager {
   private roomService: RoomService;
   private creepService: CreepService;
 
   readonly MEMORY_LASTRUN = 'lastRun';
 
   constructor(roomService: RoomService, creepService: CreepService) {
-    super('PortManager');
+    super('HauleManager');
     this.roomService = roomService;
     this.creepService = creepService;
   }
 
   public run(pri: Priority): void {
     if (pri === Priority.Low) {
-      this.creepService.runCreepRoles(Role.Porter, Porter.run);
+      this.creepService.runCreepRoles(Role.Hauler, Porter.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
@@ -42,24 +42,24 @@ export class PortManager extends Manager {
 
   private organizeEnergyTransfer(rooms: Room[]): void {
     for (const room of rooms) {
-      this.orderPorter(room);
+      this.orderHauler(room);
     }
   }
 
-  private orderPorter(room: Room): void {
-    const active = this.creepService.getCreeps(Role.Porter).length;
-    const ordered = getCreepsInQueue(room, Role.Porter);
+  private orderHauler(room: Room): void {
+    const active = this.creepService.getCreeps(Role.Hauler).length;
+    const ordered = getCreepsInQueue(room, Role.Hauler);
 
     const rcl = room.controller?.level || 0;
     const max = rcl < 4 ? 1 : 2;
 
     if (active + ordered < max) {
       const order = new Order();
-      const maxTier = getMaxTierSimpleWorker(room.energyCapacityAvailable);
-      order.body = getSimpleWorkerBody(maxTier);
+      const maxTier = getMaxTierHauler(room.energyCapacityAvailable);
+      order.body = getHaulerBody(maxTier);
       order.priority = Priority.Standard;
       order.memory = {
-        role: Role.Porter,
+        role: Role.Hauler,
         tier: maxTier
       };
 

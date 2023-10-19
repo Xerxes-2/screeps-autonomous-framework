@@ -3,5 +3,6 @@
  */
 
 export enum OperationType {
-  Test = 0
+  Test = 0,
+  Claim = 1
 }

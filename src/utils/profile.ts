@@ -5,6 +5,50 @@
 
 const SIMPLE_WORKER_MAX_TIER = 16;
 const HEAVY_WORKER_MAX_TIER = 12;
+const HAULER_MAX_TIER = 40;
+const CLAIMER_MAX_TIER = 5;
+
+/**
+ * Assembles a body for a Claimer creep which has 1:1 CLAIM to MOVE parts.
+ * @param tier The scaling size of the creep body.
+ * @returns The creep body array.
+ */
+export function getClaimerBody(tier: number) {
+  if (tier > CLAIMER_MAX_TIER) {
+    tier = CLAIMER_MAX_TIER;
+  }
+  return addToBody([], tier, [CLAIM, MOVE]);
+}
+
+/**
+ * Determines the maximum size for a Claimer creep based on energy.
+ * @param energy The maximum amount of energy to use for spawning the creep body.
+ * @returns The maximum tier for the amount of energy.
+ */
+export function getMaxTierClaimer(energy: number) {
+  return getMaxTier(energy, getClaimerBody, CLAIMER_MAX_TIER);
+}
+
+/**
+ * Assembles a body for a Hauler creep which has 1:1 CARRY to MOVE parts.
+ * @param tier The scaling size of the creep body.
+ * @returns The creep body array.
+ */
+export function getHaulerBody(tier: number) {
+  if (tier > HAULER_MAX_TIER) {
+    tier = HAULER_MAX_TIER;
+  }
+  return addToBody([], tier, [CARRY, MOVE]);
+}
+
+/**
+ * Determines the maximum size for a Hauler creep based on energy.
+ * @param energy The maximum amount of energy to use for spawning the creep body.
+ * @returns The maximum tier for the amount of energy.
+ */
+export function getMaxTierHauler(energy: number) {
+  return getMaxTier(energy, getHaulerBody, HAULER_MAX_TIER);
+}
 
 /**
  * Assembles a body for a Simple Worker creep which has 1:1 WORK to CARRY parts.
