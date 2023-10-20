@@ -7,6 +7,30 @@ const SIMPLE_WORKER_MAX_TIER = 16;
 const HEAVY_WORKER_MAX_TIER = 12;
 const HAULER_MAX_TIER = 40;
 const CLAIMER_MAX_TIER = 5;
+const HARVESTER_MAX_TIER = 13;
+
+/**
+ * Assembles a body for a Harvester creep which has 2:1:1 WORK to MOVE to CARRY parts.
+ * @param tier The scaling size of the creep body.
+ * @returns The creep body array.
+ */
+export function getHarvesterBody(tier: number) {
+  if (tier > HARVESTER_MAX_TIER) {
+    tier = HARVESTER_MAX_TIER;
+  }
+  let body: BodyPartConstant[] = [];
+  body = addToBody(body, tier, [WORK, WORK, CARRY, MOVE]);
+  return body;
+}
+
+/**
+ * Determines the maximum size for a Harvester creep based on energy.
+ * @param energy The maximum amount of energy to use for spawning the creep body.
+ * @returns The maximum tier for the amount of energy.
+ */
+export function getMaxTierHarvester(energy: number) {
+  return getMaxTier(energy, getHarvesterBody, HARVESTER_MAX_TIER);
+}
 
 /**
  * Assembles a body for a Claimer creep which has 1:1 CLAIM to MOVE parts.

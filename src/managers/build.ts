@@ -6,7 +6,7 @@ import * as Builder from 'roles/builder';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getMaxTierSimpleWorker, getSimpleWorkerBody } from 'utils/profile';
+import { getHeavyWorkerBody, getMaxTierHeavyWorker } from 'utils/profile';
 
 /**
  * The `BuildManager` class orchestrates the build-related activities and behaviors of the bot.
@@ -53,8 +53,8 @@ export class BuildManager extends Manager {
 
     if (active + ordered === 0 && buildSites.length > 0) {
       const order = new Order();
-      const maxTier = getMaxTierSimpleWorker(room.energyCapacityAvailable);
-      order.body = getSimpleWorkerBody(maxTier);
+      const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
+      order.body = getHeavyWorkerBody(maxTier);
       order.priority = Priority.Standard;
       order.memory = {
         role: Role.Builder,
