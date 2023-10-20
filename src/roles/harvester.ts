@@ -3,6 +3,7 @@
  * @module
  */
 
+import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
@@ -40,7 +41,7 @@ function runHarvestEnergy(creep: Creep) {
   const source = getTargetSource(creep);
   if (source) {
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
+      moveTo(creep, source, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
   }
 }
@@ -63,7 +64,7 @@ function runDischargeEnergy(creep: Creep) {
 
   if (targetStructure) {
     if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }
 }

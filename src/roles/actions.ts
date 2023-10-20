@@ -3,6 +3,8 @@
  * @module
  */
 
+import { moveTo } from 'screeps-cartographer';
+
 export function transferEnergy(creep: Creep) {
   let targetStructure: AnyStructure | null | undefined = creep.pos.findClosestByRange(FIND_STRUCTURES, {
     filter: structure =>
@@ -23,7 +25,7 @@ export function transferEnergy(creep: Creep) {
 
   if (targetStructure) {
     if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
     }
     return true;
   }
@@ -37,7 +39,7 @@ export function withdrawEnergy(creep: Creep) {
   const leastFreeBank = _.sortBy(banks, b => b.store.getFreeCapacity()).shift();
   if (leastFreeBank) {
     if (creep.withdraw(leastFreeBank, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(leastFreeBank, { visualizePathStyle: { stroke: '#ffaa00' } });
+      moveTo(creep, leastFreeBank, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
     return true;
   }

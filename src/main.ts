@@ -14,6 +14,7 @@ import { OperationManager } from 'managers/operation';
 import { SpawnManager } from 'managers/spawn';
 import { TowerManager } from 'managers/tower';
 import { UpgradeManager } from 'managers/upgrade';
+import { preTick, reconcileTraffic } from 'screeps-cartographer';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { ErrorMapper } from 'utils/errorMapper';
@@ -30,6 +31,7 @@ alert('✨=== Global Reset ===✨');
  * @see https://docs.screeps.com/game-loop.html
  */
 export const loop = ErrorMapper.wrapLoop(() => {
+  preTick();
   initSettings();
 
   const creepService = new CreepService();
@@ -55,6 +57,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
   }
+  reconcileTraffic();
 
   if (Game.cpu.bucket > 9500) {
     for (const manager of managerList) {

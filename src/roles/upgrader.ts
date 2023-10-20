@@ -4,6 +4,7 @@
  */
 
 import { withdrawEnergy } from 'roles/actions';
+import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
@@ -37,6 +38,10 @@ function runWithdrawEnergy(creep: Creep) {
     runUpgradeController(creep);
     return;
   }
+  // stop upgrading when energy in base is not full
+  if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+    return;
+  }
 
   withdrawEnergy(creep);
 }
@@ -52,7 +57,7 @@ function runUpgradeController(creep: Creep) {
   const { controller } = creep.room;
   if (controller) {
     if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(controller, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, controller, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }
 }

@@ -7,7 +7,7 @@ const SIMPLE_WORKER_MAX_TIER = 16;
 const HEAVY_WORKER_MAX_TIER = 12;
 const HAULER_MAX_TIER = 40;
 const CLAIMER_MAX_TIER = 5;
-const HARVESTER_MAX_TIER = 13;
+const HARVESTER_MAX_TIER = 3;
 
 /**
  * Assembles a body for a Harvester creep which has 2:1:1 WORK to MOVE to CARRY parts.

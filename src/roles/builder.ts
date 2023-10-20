@@ -4,6 +4,7 @@
  */
 
 import { withdrawEnergy } from 'roles/actions';
+import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
@@ -37,7 +38,10 @@ function runWithdrawEnergy(creep: Creep) {
     runBuildConstruction(creep);
     return;
   }
-
+  // stop building when energy in base is not full
+  if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+    return;
+  }
   withdrawEnergy(creep);
 }
 
@@ -52,7 +56,7 @@ function runBuildConstruction(creep: Creep) {
   const constructionSite = creep.room.find(FIND_CONSTRUCTION_SITES)?.[0];
   if (constructionSite) {
     if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }
 }

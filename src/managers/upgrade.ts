@@ -54,9 +54,9 @@ export class UpgradeManager extends Manager {
     const active = this.creepService.getCreeps(Role.Upgrader, controller.id).length;
     const ordered = getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
 
-    const rcl = room.controller?.level || 0;
-    const maxUpgraderCount = rcl < 3 ? 1 : 2;
-
+    const activeBuilders = this.creepService.getCreeps(Role.Builder, controller.id).length;
+    const orderedBuilders = getCreepsInQueue(controller.room, Role.Builder, controller.id);
+    const maxUpgraderCount = 1 + (activeBuilders + orderedBuilders) ? 0 : 4;
     if (active + ordered < maxUpgraderCount) {
       const order = new Order();
       const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);

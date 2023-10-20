@@ -4,6 +4,7 @@
  */
 
 import * as Actions from 'roles/actions';
+import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
@@ -43,7 +44,7 @@ function runHaulEnergy(creep: Creep) {
   const leastFreeSink = _.sortBy(sinks, s => s.store.getFreeCapacity()).shift();
   if (leastFreeSink) {
     if (creep.withdraw(leastFreeSink, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(leastFreeSink, { visualizePathStyle: { stroke: '#ffaa00' } });
+      moveTo(creep, leastFreeSink, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
     return true;
   }
