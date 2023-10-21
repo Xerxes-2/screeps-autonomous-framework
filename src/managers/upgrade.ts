@@ -58,7 +58,7 @@ export class UpgradeManager extends Manager {
     const orderedBuilders = getCreepsInQueue(controller.room, Role.Builder);
     let maxUpgraderCount = 1;
     if (activeBuilders + orderedBuilders === 0 && controller.level > 2) {
-      maxUpgraderCount += 2;
+      maxUpgraderCount += 1;
     }
     if (active + ordered < maxUpgraderCount) {
       const order = new Order();

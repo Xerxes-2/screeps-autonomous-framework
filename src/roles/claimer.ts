@@ -37,16 +37,10 @@ function runClaim(creep: Creep) {
       moveTo(creep, targetController, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   } else {
-    moveTo(
-      creep,
-      new RoomPosition(25, 25, creep.memory.target),
-      { visualizePathStyle: { stroke: '#ffffff' } },
-      {
-        defaultRoomCost: 1,
-        sourceKeeperRoomCost: 10,
-        highwayRoomCost: 2
-      }
-    );
+    creep.moveTo(new RoomPosition(25, 25, creep.memory.target), {
+      visualizePathStyle: { stroke: '#ffffff' },
+      avoid: creep.room.find(FIND_HOSTILE_CREEPS).map(c => ({ pos: c.pos, range: 10 })) ?? []
+    });
   }
 }
 

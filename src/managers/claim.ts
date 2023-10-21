@@ -38,7 +38,7 @@ export class ClaimManager extends Manager {
     }
   }
 
-  readonly claimList = ['E7S36'];
+  readonly claimList = ['E3S36'];
 
   private organizeClaiming() {
     for (const roomName of this.claimList) {
@@ -62,7 +62,9 @@ export class ClaimManager extends Manager {
     }
 
     const maxTier = getMaxTierClaimer(spawn.room.energyCapacityAvailable);
+    // const maxTier = 1;
     const body = getClaimerBody(maxTier);
+    // const body = [MOVE];
     const order = new Order();
     order.body = body;
     order.priority = Priority.Standard;

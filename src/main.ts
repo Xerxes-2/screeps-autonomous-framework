@@ -12,10 +12,12 @@ import { ClaimManager } from 'managers/claim';
 import { HaulManager } from 'managers/haul';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
+import { PioneerManager } from 'managers/pione';
 import { SpawnManager } from 'managers/spawn';
 import { TowerManager } from 'managers/tower';
 import { UpgradeManager } from 'managers/upgrade';
 import { preTick, reconcileTraffic } from 'screeps-cartographer';
+import profiler from 'screeps-profiler';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { ErrorMapper } from 'utils/errorMapper';
@@ -32,46 +34,50 @@ alert('✨=== Global Reset ===✨');
  * The main loop is the entry point for the bot.
  * @see https://docs.screeps.com/game-loop.html
  */
+profiler.enable();
 export const loop = ErrorMapper.wrapLoop(() => {
-  preTick();
-  initSettings();
+  profiler.wrap(() => {
+    preTick();
+    initSettings();
 
-  const creepService = new CreepService();
-  const roomService = new RoomService();
+    const creepService = new CreepService();
+    const roomService = new RoomService();
 
-  const cpuLimit = getCpuLimit();
-  const managerList = [
-    new MemoryManager(),
-    new TowerManager(roomService),
-    new HarvestManager(roomService, creepService),
-    new HaulManager(roomService, creepService),
-    new UpgradeManager(roomService, creepService),
-    new BuildManager(roomService, creepService),
-    new ClaimManager(creepService, roomService),
-    new OperationManager(roomService, creepService)
-    // new IdleManager(creepService)
-  ];
+    const cpuLimit = getCpuLimit();
+    const managerList = [
+      new MemoryManager(),
+      new TowerManager(roomService),
+      new HarvestManager(roomService, creepService),
+      new HaulManager(roomService, creepService),
+      new UpgradeManager(roomService, creepService),
+      new BuildManager(roomService, creepService),
+      new PioneerManager(roomService, creepService),
+      new ClaimManager(creepService, roomService),
+      new OperationManager(roomService, creepService)
+      // new IdleManager(creepService)
+    ];
 
-  const priorityList = [Priority.Critical, Priority.Important, Priority.Standard, Priority.Low, Priority.Trivial];
-  for (const priority of priorityList) {
-    for (const manager of managerList) {
-      if (priority === Priority.Critical || Game.cpu.getUsed() < cpuLimit) {
-        manager.run(priority);
+    const priorityList = [Priority.Critical, Priority.Important, Priority.Standard, Priority.Low, Priority.Trivial];
+    for (const priority of priorityList) {
+      for (const manager of managerList) {
+        if (priority === Priority.Critical || Game.cpu.getUsed() < cpuLimit) {
+          manager.run(priority);
+        }
       }
     }
-  }
-  reconcileTraffic();
+    reconcileTraffic();
 
-  if (Game.cpu.bucket > 9500) {
-    for (const manager of managerList) {
-      if (Game.cpu.getUsed() < cpuLimit) {
-        manager.run(Priority.Overflow);
+    if (Game.cpu.bucket > 9500) {
+      for (const manager of managerList) {
+        if (Game.cpu.getUsed() < cpuLimit) {
+          manager.run(Priority.Overflow);
+        }
       }
     }
-  }
 
-  new SpawnManager(roomService).run();
-  exportStats();
+    new SpawnManager(roomService).run();
+    exportStats();
+  });
 });
 
 /**
