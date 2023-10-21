@@ -65,7 +65,7 @@ Room.prototype.getAllSinks = function () {
 Room.prototype.getRemoteRooms = function () {
   if (!this._remoteRooms) {
     this._remoteRooms = [];
-    for (const roomName of Object.keys(Game.map.describeExits(this.name))) {
+    for (const roomName of Object.values(Game.map.describeExits(this.name))) {
       this._remoteRooms.push(roomName);
     }
   }

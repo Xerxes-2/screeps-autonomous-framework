@@ -5,6 +5,7 @@
 
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   Claim = 1
@@ -37,10 +38,7 @@ function runClaim(creep: Creep) {
       moveTo(creep, targetController, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   } else {
-    creep.moveTo(new RoomPosition(25, 25, creep.memory.target), {
-      visualizePathStyle: { stroke: '#ffffff' },
-      avoid: creep.room.find(FIND_HOSTILE_CREEPS).map(c => ({ pos: c.pos, range: 10 })) ?? []
-    });
+    travelTo(creep, creep.memory.target);
   }
 }
 

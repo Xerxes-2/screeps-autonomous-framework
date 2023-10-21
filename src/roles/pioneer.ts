@@ -5,6 +5,7 @@
 
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   HarvestEnergy = 1,
@@ -49,62 +50,7 @@ function runHarvestEnergy(creep: Creep) {
     return;
   }
   if (creep.room !== targetRoom) {
-    const ret = PathFinder.search(creep.pos, targetRoom.controller!.pos, {
-      plainCost: 2,
-      swampCost: 10,
-
-      roomCallback: roomName => {
-        const room = Game.rooms[roomName];
-        if (!room) {
-          return false;
-        }
-        const costs = new PathFinder.CostMatrix();
-
-        room.find(FIND_STRUCTURES).forEach(function (struct) {
-          if (struct.structureType === STRUCTURE_ROAD) {
-            // Favor roads over plain tiles
-            costs.set(struct.pos.x, struct.pos.y, 1);
-          } else if (
-            struct.structureType !== STRUCTURE_CONTAINER &&
-            (struct.structureType !== STRUCTURE_RAMPART || !struct.my)
-          ) {
-            // Can't walk through non-walkable buildings
-            costs.set(struct.pos.x, struct.pos.y, 0xff);
-          }
-        });
-
-        // Avoid creeps and wall in the room
-        room.find(FIND_CREEPS).forEach(function (c) {
-          costs.set(c.pos.x, c.pos.y, 0xff);
-        });
-        // Avoid constructed walls
-        // Avoid 3 range from hostile creeps
-        room.find(FIND_HOSTILE_CREEPS).forEach(c => {
-          if (c.body.some(b => b.type === ATTACK || b.type === RANGED_ATTACK)) {
-            for (let x = c.pos.x - 3; x <= c.pos.x + 3; x++) {
-              for (let y = c.pos.y - 3; y <= c.pos.y + 3; y++) {
-                costs.set(x, y, 0xff);
-              }
-            }
-          }
-        });
-        return costs;
-      }
-    });
-
-    if (ret.incomplete) {
-      creep.say('🚩Incomplete');
-    }
-    // display path
-    for (const pathPos of ret.path) {
-      new RoomVisual(pathPos.roomName).circle(pathPos.x, pathPos.y, {
-        radius: 0.5,
-        fill: 'transparent',
-        stroke: '#fff'
-      });
-    }
-    const pos = ret.path[0];
-    creep.move(creep.pos.getDirectionTo(pos));
+    travelTo(creep, creep.memory.target);
     return;
   }
   if (creep.store.getFreeCapacity() === 0) {

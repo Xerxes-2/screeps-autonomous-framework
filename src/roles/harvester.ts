@@ -5,6 +5,7 @@
 
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   HarvestEnergy = 1
@@ -37,21 +38,7 @@ function runHarvestEnergy(creep: Creep) {
   const room = getTargetRoom(creep);
   // go to target room
   if (room && creep.room.name !== room.name) {
-    const exitDir = creep.room.findExitTo(room.name);
-    if (exitDir === ERR_NO_PATH) {
-      creep.say('🚫NoPath');
-      return;
-    }
-    if (exitDir === ERR_INVALID_ARGS) {
-      creep.say('🚫InvalidArgs');
-      return;
-    }
-    const exit = creep.pos.findClosestByRange(exitDir);
-    if (!exit) {
-      creep.say('🚫NoExit');
-      return;
-    }
-    creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+    travelTo(creep, room.name);
     return;
   }
 }

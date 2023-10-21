@@ -13,6 +13,7 @@ import { HaulManager } from 'managers/haul';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
 import { PioneerManager } from 'managers/pione';
+import { RemoteManager } from 'managers/remote';
 import { SpawnManager } from 'managers/spawn';
 import { TowerManager } from 'managers/tower';
 import { UpgradeManager } from 'managers/upgrade';
@@ -53,6 +54,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       new BuildManager(roomService, creepService),
       new PioneerManager(roomService, creepService),
       new ClaimManager(creepService, roomService),
+      new RemoteManager(roomService, creepService),
       new OperationManager(roomService, creepService)
       // new IdleManager(creepService)
     ];

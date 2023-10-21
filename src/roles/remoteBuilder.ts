@@ -4,7 +4,9 @@
  */
 
 import { withdrawEnergy } from 'roles/actions';
+import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   WithdrawEnergy = 1,
@@ -40,21 +42,7 @@ function runWithdrawEnergy(creep: Creep) {
   }
   // go to homeroom
   if (creep.memory.homeroom && creep.room.name !== creep.memory.homeroom) {
-    const exitDir = creep.room.findExitTo(creep.memory.homeroom);
-    if (exitDir === ERR_NO_PATH) {
-      creep.say('🚫NoPath');
-      return;
-    }
-    if (exitDir === ERR_INVALID_ARGS) {
-      creep.say('🚫InvalidArgs');
-      return;
-    }
-    const exit = creep.pos.findClosestByRange(exitDir);
-    if (!exit) {
-      creep.say('🚫NoExit');
-      return;
-    }
-    creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+    travelTo(creep, creep.memory.homeroom);
     return;
   }
   // stop building when energy in base is not full
@@ -73,28 +61,14 @@ function runBuildConstruction(creep: Creep) {
   }
   // go to target room
   if (creep.memory.target && creep.room.name !== creep.memory.target) {
-    const exitDir = creep.room.findExitTo(creep.memory.target);
-    if (exitDir === ERR_NO_PATH) {
-      creep.say('🚫NoPath');
-      return;
-    }
-    if (exitDir === ERR_INVALID_ARGS) {
-      creep.say('🚫InvalidArgs');
-      return;
-    }
-    const exit = creep.pos.findClosestByRange(exitDir);
-    if (!exit) {
-      creep.say('🚫NoExit');
-      return;
-    }
-    creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+    travelTo(creep, creep.memory.target);
     return;
   }
 
   const constructionSite = creep.room.find(FIND_CONSTRUCTION_SITES)?.[0];
   if (constructionSite) {
     if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   } else {
     creep.say('🔧Repair');
@@ -116,7 +90,7 @@ function runRepairStructure(creep: Creep) {
   })?.[0];
   if (structure) {
     if (creep.repair(structure) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(structure, { visualizePathStyle: { stroke: '#ffffff' } });
+      moveTo(creep, structure, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }
 }

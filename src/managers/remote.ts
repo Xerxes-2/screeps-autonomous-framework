@@ -3,6 +3,7 @@ import { Priority } from 'enums/priority';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
 import * as RemoteBuilder from 'roles/remoteBuilder';
+import * as Scouter from 'roles/scouter';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
@@ -29,6 +30,7 @@ export class RemoteManager extends Manager {
   public run(pri: Priority): void {
     if (pri === Priority.Low) {
       this.creepService.runCreepRoles(Role.RemoteBuilder, RemoteBuilder.run);
+      this.creepService.runCreepRoles(Role.Scout, Scouter.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
@@ -45,10 +47,27 @@ export class RemoteManager extends Manager {
       for (const remoteRoomName of room.getRemoteRooms()) {
         const remoteRoom = Game.rooms[remoteRoomName];
         if (!remoteRoom) {
-          continue;
+          this.orderScouter(room, remoteRoomName);
+        } else {
+          this.orderRemoteBuilder(room, remoteRoom);
         }
-        this.orderRemoteBuilder(room, remoteRoom);
       }
+    }
+  }
+  private orderScouter(homeroom: Room, remoteRoom: string): void {
+    const activeCreeps = this.creepService.getCreeps(Role.Scout, remoteRoom);
+    const creepsInQueue = getCreepsInQueue(homeroom, Role.Scout, remoteRoom);
+
+    if (activeCreeps.length + creepsInQueue === 0) {
+      const order = new Order();
+      order.body = [MOVE];
+      order.priority = Priority.Low;
+      order.memory = {
+        tier: 1,
+        role: Role.Scout,
+        target: remoteRoom
+      };
+      orderCreep(homeroom, order);
     }
   }
 
@@ -62,7 +81,7 @@ export class RemoteManager extends Manager {
       return;
     }
 
-    const activeCreeps = this.creepService.getCreeps(Role.RemoteBuilder, remoteRoom.name, homeroom.name);
+    const activeCreeps = this.creepService.getCreeps(Role.RemoteBuilder, remoteRoom.name);
     const creepsInQueue = getCreepsInQueue(homeroom, Role.RemoteBuilder, remoteRoom.name);
 
     if (activeCreeps.length + creepsInQueue === 0) {

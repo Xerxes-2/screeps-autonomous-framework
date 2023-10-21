@@ -39,9 +39,9 @@ export class HarvestManager extends Manager {
         for (const room of rooms) {
           this.organizeEnergyHarvesting(room);
         }
-        // for (const room of normalRooms) {
-        //   this.organizeRemoteEnergyHarvesting(room);
-        // }
+        for (const room of normalRooms) {
+          this.organizeRemoteEnergyHarvesting(room);
+        }
         this.setValue(this.MEMORY_LASTRUN, Game.time);
       }
     }
@@ -53,11 +53,24 @@ export class HarvestManager extends Manager {
       this.orderHarvesters(room, source.id, room.name);
     }
   }
-  // private organizeRemoteEnergyHarvesting(room: Room) {
-  //   const remoteRooms = room.getRemoteRooms();
-  //   // check if have view of remote rooms
-
-  // }
+  private organizeRemoteEnergyHarvesting(room: Room) {
+    const remoteRooms = room.getRemoteRooms();
+    // check if have view of remote rooms
+    for (const remoteRoomName of remoteRooms) {
+      const remoteRoom = Game.rooms[remoteRoomName];
+      if (remoteRoom) {
+        const containers = remoteRoom.find(FIND_STRUCTURES, {
+          filter: s => s.structureType === STRUCTURE_CONTAINER
+        });
+        for (const container of containers) {
+          const source = container.pos.findInRange(FIND_SOURCES, 1).shift();
+          if (source) {
+            this.orderHarvesters(room, source.id, remoteRoomName);
+          }
+        }
+      }
+    }
+  }
 
   private orderHarvesters(room: Room, sourceId: string, sourceRoom: string) {
     const spawn = room.getMySpawn();
