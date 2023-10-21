@@ -26,6 +26,9 @@ export function run(creep: Creep) {
     case State.BuildConstruction:
       runBuildConstruction(creep);
       break;
+    case State.RepairStructure:
+      runRepairStructure(creep);
+      break;
     default:
       logUnknownState(creep);
       creep.setState(State.WithdrawEnergy);

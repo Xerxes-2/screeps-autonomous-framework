@@ -35,12 +35,17 @@ function runScoutRoom(creep: Creep) {
   // go to target room
   if (target) {
     if (creep.room.name === target) {
-      moveTo(creep, new RoomPosition(25, 25, target));
-      creep.setState(State.Stay);
+      moveTo(creep, new RoomPosition(25, 25, target), { visualizePathStyle: { stroke: '#ffffff' } });
       creep.say('🚩Stay');
+      creep.setState(State.Stay);
       return;
     }
     travelTo(creep, target);
+  }
+  const lifetime = creep.ticksToLive;
+  if (lifetime && lifetime < 1300) {
+    creep.say('🚩Stay');
+    creep.setState(State.Stay);
     return;
   }
 }

@@ -11,7 +11,8 @@ enum State {
   HarvestEnergy = 1,
   Build = 2,
   Charge = 3,
-  Upgrade = 4
+  Upgrade = 4,
+  Repair = 5
 }
 
 export function run(creep: Creep) {
@@ -31,6 +32,9 @@ export function run(creep: Creep) {
       break;
     case State.Upgrade:
       runUpgrade(creep);
+      break;
+    case State.Repair:
+      runRepair(creep);
       break;
     default:
       logUnknownState(creep);
@@ -71,9 +75,19 @@ function runHarvestEnergy(creep: Creep) {
     }
     return;
   }
-  const sources = creep.room.find(FIND_SOURCES);
+  const sources = creep.room.find(FIND_SOURCES_ACTIVE);
   if (sources.length === 0) {
-    creep.say('🚩No sources');
+    const containers = creep.room.find(FIND_STRUCTURES, {
+      filter: structure => structure.structureType === STRUCTURE_CONTAINER
+    });
+    if (containers.length === 0) {
+      creep.say('🚩No source');
+      return;
+    }
+    const container = containers[0];
+    if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, container, { visualizePathStyle: { stroke: '#ffaa00' } });
+    }
     return;
   }
   const source = sources[0];
@@ -81,6 +95,7 @@ function runHarvestEnergy(creep: Creep) {
     moveTo(creep, source, { visualizePathStyle: { stroke: '#ffaa00' } });
   }
 }
+
 function runCharge(creep: Creep) {
   if (creep.store[RESOURCE_ENERGY] === 0) {
     creep.setState(State.HarvestEnergy);
@@ -90,13 +105,34 @@ function runCharge(creep: Creep) {
   }
   const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
   if (!spawn || creep.room.energyAvailable === creep.room.energyCapacityAvailable) {
-    creep.setState(State.Build);
-    creep.say('🚧Build');
-    runBuild(creep);
+    creep.setState(State.Repair);
+    creep.say('🔧Repair');
+    runRepair(creep);
     return;
   }
   if (creep.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
     moveTo(creep, spawn, { visualizePathStyle: { stroke: '#ffffff' } });
+  }
+}
+
+function runRepair(creep: Creep) {
+  if (creep.store[RESOURCE_ENERGY] === 0) {
+    creep.setState(State.HarvestEnergy);
+    creep.say('🔄Harvest');
+    runHarvestEnergy(creep);
+    return;
+  }
+  const structure = creep.room.find(FIND_STRUCTURES, {
+    filter: s => s.hits < s.hitsMax && s.structureType !== STRUCTURE_WALL
+  })?.[0];
+  if (structure) {
+    if (creep.repair(structure) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, structure, { visualizePathStyle: { stroke: '#ffffff' } });
+    }
+  } else {
+    creep.setState(State.Build);
+    creep.say('🚧Build');
+    runBuild(creep);
   }
 }
 

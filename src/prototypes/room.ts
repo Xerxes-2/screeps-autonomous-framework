@@ -25,6 +25,11 @@ declare global {
 
     /** Find all remote rooms */
     getRemoteRooms(): string[];
+
+    _remoteSinks?: StructureContainer[];
+
+    /** Find all remote sinks */
+    getRemoteSinks(): StructureContainer[];
   }
 }
 
@@ -70,4 +75,18 @@ Room.prototype.getRemoteRooms = function () {
     }
   }
   return this._remoteRooms;
+};
+
+Room.prototype.getRemoteSinks = function () {
+  if (!this._remoteSinks) {
+    this._remoteSinks = [];
+    for (const roomName of this.getRemoteRooms()) {
+      const room = Game.rooms[roomName];
+      if (!room) {
+        continue;
+      }
+      this._remoteSinks.push(...room.getAllSinks());
+    }
+  }
+  return this._remoteSinks;
 };

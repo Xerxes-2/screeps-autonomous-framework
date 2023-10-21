@@ -6,6 +6,7 @@
 import * as Actions from 'roles/actions';
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   HaulEnergy = 1,
@@ -51,7 +52,9 @@ function runHaulEnergy(creep: Creep) {
   }
 
   const sinks = creep.room.getAllSinks();
-  let target: AnyStructure = sinks
+  const remoteSinks = creep.room.getRemoteSinks();
+  const allSinks = sinks.concat(remoteSinks);
+  let target: AnyStructure = allSinks
     .filter(sink => sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY))
     .sort((a, b) => {
       const aFree = a.store.getFreeCapacity(RESOURCE_ENERGY);
@@ -62,10 +65,15 @@ function runHaulEnergy(creep: Creep) {
   target ??= creep.room.find(FIND_STRUCTURES, {
     filter: structure =>
       structure.structureType === STRUCTURE_STORAGE &&
-      structure.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
+      structure.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY) &&
+      creep.room.energyAvailable < creep.room.energyCapacityAvailable
   })[0];
 
   if (target) {
+    if (target.room.name !== creep.room.name) {
+      travelTo(creep, target.room.name);
+      return true;
+    }
     if (creep.withdraw(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       moveTo(creep, target, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
@@ -79,6 +87,11 @@ function runTransferEnergy(creep: Creep) {
     creep.say('💰Withdraw');
     creep.setState(State.HaulEnergy);
     runHaulEnergy(creep);
+    return;
+  }
+  // go home
+  if (creep.room.name !== creep.memory.homeroom && creep.memory.homeroom) {
+    travelTo(creep, creep.memory.homeroom);
     return;
   }
 

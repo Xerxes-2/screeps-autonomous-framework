@@ -77,7 +77,7 @@ export class RemoteManager extends Manager {
       filter: s => s.structureType === STRUCTURE_CONTAINER
     });
     // if no construction sites or containers hp > 80%, return
-    if (constructionSites.length === 0 && containers.every(c => c.hits / c.hitsMax > 0.8)) {
+    if (constructionSites.length === 0 && containers.every(c => c.hits < 100_000)) {
       return;
     }
 

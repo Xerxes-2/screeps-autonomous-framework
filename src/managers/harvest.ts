@@ -54,21 +54,14 @@ export class HarvestManager extends Manager {
     }
   }
   private organizeRemoteEnergyHarvesting(room: Room) {
-    const remoteRooms = room.getRemoteRooms();
-    // check if have view of remote rooms
-    for (const remoteRoomName of remoteRooms) {
-      const remoteRoom = Game.rooms[remoteRoomName];
-      if (remoteRoom) {
-        const containers = remoteRoom.find(FIND_STRUCTURES, {
-          filter: s => s.structureType === STRUCTURE_CONTAINER
-        });
-        for (const container of containers) {
-          const source = container.pos.findInRange(FIND_SOURCES, 1).shift();
-          if (source) {
-            this.orderHarvesters(room, source.id, remoteRoomName);
-          }
-        }
+    const remoteSinks = room.getRemoteSinks();
+    for (const sink of remoteSinks) {
+      const sourceRoom = sink.room;
+      const sourceId = sink.pos.findInRange(FIND_SOURCES, 1)[0].id;
+      if (!sourceId) {
+        continue;
       }
+      this.orderHarvesters(room, sourceId, sourceRoom.name);
     }
   }
 

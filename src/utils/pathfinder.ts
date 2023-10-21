@@ -38,7 +38,7 @@ export function travelTo(creep: Creep, goalRoom: string) {
         // Avoid constructed walls
         // Avoid 3 range from hostile creeps
         room.find(FIND_HOSTILE_CREEPS).forEach(c => {
-          if (c.body.some(b => b.type === ATTACK || b.type === RANGED_ATTACK)) {
+          if (c.getActiveBodyparts(ATTACK) || c.getActiveBodyparts(RANGED_ATTACK)) {
             for (let x = c.pos.x - 3; x <= c.pos.x + 3; x++) {
               for (let y = c.pos.y - 3; y <= c.pos.y + 3; y++) {
                 costs.set(x, y, 0xff);
