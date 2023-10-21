@@ -58,13 +58,13 @@ function runHaulEnergy(creep: Creep) {
       const bFree = b.store.getFreeCapacity(RESOURCE_ENERGY);
       return aFree - bFree;
     })[0];
-  if (!target) {
-    target = creep.room.find(FIND_STRUCTURES, {
-      filter: structure =>
-        structure.structureType === STRUCTURE_STORAGE &&
-        structure.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
-    })[0];
-  }
+
+  target ??= creep.room.find(FIND_STRUCTURES, {
+    filter: structure =>
+      structure.structureType === STRUCTURE_STORAGE &&
+      structure.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
+  })[0];
+
   if (target) {
     if (creep.withdraw(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       moveTo(creep, target, { visualizePathStyle: { stroke: '#ffaa00' } });

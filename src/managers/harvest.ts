@@ -39,6 +39,9 @@ export class HarvestManager extends Manager {
         for (const room of rooms) {
           this.organizeEnergyHarvesting(room);
         }
+        // for (const room of normalRooms) {
+        //   this.organizeRemoteEnergyHarvesting(room);
+        // }
         this.setValue(this.MEMORY_LASTRUN, Game.time);
       }
     }
@@ -50,6 +53,11 @@ export class HarvestManager extends Manager {
       this.orderHarvesters(room, source.id, room.name);
     }
   }
+  // private organizeRemoteEnergyHarvesting(room: Room) {
+  //   const remoteRooms = room.getRemoteRooms();
+  //   // check if have view of remote rooms
+
+  // }
 
   private orderHarvesters(room: Room, sourceId: string, sourceRoom: string) {
     const spawn = room.getMySpawn();

@@ -7,8 +7,7 @@ import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 
 enum State {
-  HarvestEnergy = 1,
-  TransferEnergy = 2
+  HarvestEnergy = 1
 }
 
 export function run(creep: Creep) {
@@ -20,9 +19,6 @@ export function run(creep: Creep) {
     case State.HarvestEnergy:
       runHarvestEnergy(creep);
       break;
-    case State.TransferEnergy:
-      runDischargeEnergy(creep);
-      break;
     default:
       logUnknownState(creep);
       creep.setState(State.HarvestEnergy);
@@ -31,51 +27,42 @@ export function run(creep: Creep) {
 }
 
 function runHarvestEnergy(creep: Creep) {
-  // if (creep.isFull) {
-  //   creep.say('📥Discharge');
-  //   creep.setState(State.TransferEnergy);
-  //   runDischargeEnergy(creep);
-  //   return;
-  // }
-
   const source = getTargetSource(creep);
   if (source) {
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
       moveTo(creep, source, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
-  }
-}
-
-function runDischargeEnergy(creep: Creep) {
-  if (!creep.store[RESOURCE_ENERGY]) {
-    creep.say('⚡Harvest');
-    creep.setState(State.HarvestEnergy);
-    runHarvestEnergy(creep);
     return;
   }
-  // let targetStructure: AnyStructure | undefined | null = getTargetSinks(creep).find(
-  //   s => s.store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store[RESOURCE_ENERGY]
-  // );
-
-  // targetStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-  //   filter: structure =>
-  //     structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-  // });
-
-  // if (targetStructure) {
-  //   if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-  //     moveTo(creep, targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
-  //   }
-  // }
+  const room = getTargetRoom(creep);
+  // go to target room
+  if (room && creep.room.name !== room.name) {
+    const exitDir = creep.room.findExitTo(room.name);
+    if (exitDir === ERR_NO_PATH) {
+      creep.say('🚫NoPath');
+      return;
+    }
+    if (exitDir === ERR_INVALID_ARGS) {
+      creep.say('🚫InvalidArgs');
+      return;
+    }
+    const exit = creep.pos.findClosestByRange(exitDir);
+    if (!exit) {
+      creep.say('🚫NoExit');
+      return;
+    }
+    creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+    return;
+  }
 }
 
-// function getTargetSinks(creep: Creep) {
-//   const source = getTargetSource(creep);
-//   if (!source) {
-//     return [];
-//   }
-//   return creep.room.getSourceSinks(source.id);
-// }
+function getTargetRoom(creep: Creep) {
+  if (!creep.memory.target) {
+    return null;
+  }
+  const roomName = creep.memory.target.split('-')[0];
+  return Game.rooms[roomName];
+}
 
 function getTargetSource(creep: Creep) {
   if (!creep.memory.source && creep.memory.target) {

@@ -42,8 +42,8 @@ export function transferEnergy(creep: Creep) {
         filter: c => c.memory.role === Role.Upgrader && c.store.getFreeCapacity(RESOURCE_ENERGY) > 0
       })
       .shift();
-    const rand = Math.random();
-    if (rand < 0.75) {
+    const rand = Game.time % 200;
+    if (rand < 150) {
       if (builder) {
         if (creep.transfer(builder, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
           moveTo(creep, builder, { visualizePathStyle: { stroke: '#ffffff' } });

@@ -9,9 +9,9 @@ import { getCreepsInQueue, orderCreep } from 'utils/order';
 import { getHaulerBody, getMaxTierHauler } from 'utils/profile';
 
 /**
- * The `PortManager` class orchestrates the energy transferring activities and behaviors of the bot.
+ * The `HaulManager` class orchestrates the energy transferring activities and behaviors of the bot.
  *
- * This class should be utilized whenever you need to control and manage Porter creeps and their
+ * This class should be utilized whenever you need to control and manage Hauler creeps and their
  * associated tasks within the framework.
  */
 
@@ -49,13 +49,10 @@ export class HaulManager extends Manager {
   }
 
   private orderHauler(room: Room): void {
-    const active = this.creepService.getCreeps(Role.Hauler).length;
+    const active = this.creepService.getCreeps(Role.Hauler, null, room.name).length;
     const ordered = getCreepsInQueue(room, Role.Hauler);
 
-    const rcl = room.controller?.level || 0;
-    const max = rcl < 3 ? 1 : 2;
-
-    if (active + ordered < max) {
+    if (active + ordered < 2) {
       const order = new Order();
       const maxTier = getMaxTierHauler(room.energyCapacityAvailable);
       order.body = getHaulerBody(maxTier);

@@ -10,5 +10,6 @@ export enum Role {
   Builder = 2,
   Hauler = 3,
   Claimer = 4,
-  Pioneer = 5
+  Pioneer = 5,
+  RemoteBuilder = 6
 }
