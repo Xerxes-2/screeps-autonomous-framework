@@ -22,6 +22,12 @@ export function transferEnergy(creep: Creep) {
     });
     targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
   }
+  if (!targetStructure) {
+    const banks: StructureStorage[] = creep.room.find(FIND_STRUCTURES, {
+      filter: structure => structure.structureType === STRUCTURE_STORAGE && structure.store.getFreeCapacity() > 0
+    });
+    targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
+  }
 
   if (targetStructure) {
     if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {

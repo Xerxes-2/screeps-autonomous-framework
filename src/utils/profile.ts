@@ -6,7 +6,7 @@
 const SIMPLE_WORKER_MAX_TIER = 16;
 const HEAVY_WORKER_MAX_TIER = 12;
 const HAULER_MAX_TIER = 40;
-const CLAIMER_MAX_TIER = 5;
+const CLAIMER_MAX_TIER = 1;
 const HARVESTER_MAX_TIER = 3;
 
 /**
@@ -19,7 +19,7 @@ export function getHarvesterBody(tier: number) {
     tier = HARVESTER_MAX_TIER;
   }
   let body: BodyPartConstant[] = [];
-  body = addToBody(body, tier, [WORK, WORK, CARRY, MOVE]);
+  body = addToBody(body, tier, [WORK, WORK, MOVE]);
   return body;
 }
 
@@ -33,7 +33,7 @@ export function getMaxTierHarvester(energy: number) {
 }
 
 /**
- * Assembles a body for a Claimer creep which has 1:1 CLAIM to MOVE parts.
+ * Assembles a body for a Claimer creep which has 1:6 CLAIM to MOVE parts.
  * @param tier The scaling size of the creep body.
  * @returns The creep body array.
  */
@@ -41,7 +41,7 @@ export function getClaimerBody(tier: number) {
   if (tier > CLAIMER_MAX_TIER) {
     tier = CLAIMER_MAX_TIER;
   }
-  return addToBody([], tier, [CLAIM, MOVE]);
+  return addToBody([], tier, [CLAIM, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]);
 }
 
 /**

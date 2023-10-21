@@ -8,6 +8,7 @@ import { Priority } from 'enums/priority';
 import { BuildManager } from 'managers/build';
 import { HarvestManager } from 'managers/harvest';
 // import { IdleManager } from 'managers/idle';
+import { ClaimManager } from 'managers/claim';
 import { HaulManager } from 'managers/haul';
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
@@ -19,6 +20,7 @@ import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { ErrorMapper } from 'utils/errorMapper';
 import { alert, setLogLevel, warning } from 'utils/log';
+import { exportStats } from './utils/stats';
 
 /**
  * Display an alert when global resets.
@@ -45,6 +47,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     new HaulManager(roomService, creepService),
     new UpgradeManager(roomService, creepService),
     new BuildManager(roomService, creepService),
+    new ClaimManager(creepService, roomService),
     new OperationManager(roomService, creepService)
     // new IdleManager(creepService)
   ];
@@ -68,6 +71,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   new SpawnManager(roomService).run();
+  exportStats();
 });
 
 /**

@@ -38,12 +38,27 @@ export class TowerManager extends Manager {
       const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
       if (closestHostile) {
         tower.attack(closestHostile);
+        continue;
       }
       const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: structure => structure.structureType !== STRUCTURE_WALL && structure.hits < structure.hitsMax
+        filter: structure =>
+          structure.structureType !== STRUCTURE_WALL &&
+          structure.structureType !== STRUCTURE_RAMPART &&
+          structure.hits < structure.hitsMax
       });
       if (closestDamagedStructure) {
         tower.repair(closestDamagedStructure);
+        continue;
+      }
+      // wall repair
+      const walls = room.find(FIND_STRUCTURES, {
+        filter: structure =>
+          (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) &&
+          structure.hits < 100_000
+      });
+      const lowestWall = _.sortBy(walls, w => w.hits)[0];
+      if (lowestWall) {
+        tower.repair(lowestWall);
       }
     }
   }

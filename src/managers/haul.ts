@@ -2,7 +2,7 @@ import { Order } from 'classes/order';
 import { Priority } from 'enums/priority';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
-import * as Porter from 'roles/hauler';
+import * as Hauler from 'roles/hauler';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
@@ -22,14 +22,14 @@ export class HaulManager extends Manager {
   readonly MEMORY_LASTRUN = 'lastRun';
 
   constructor(roomService: RoomService, creepService: CreepService) {
-    super('HauleManager');
+    super('HaulManager');
     this.roomService = roomService;
     this.creepService = creepService;
   }
 
   public run(pri: Priority): void {
     if (pri === Priority.Low) {
-      this.creepService.runCreepRoles(Role.Hauler, Porter.run);
+      this.creepService.runCreepRoles(Role.Hauler, Hauler.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {

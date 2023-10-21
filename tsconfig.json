@@ -11,7 +11,8 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "allowSyntheticDefaultImports": true,
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "allowJs": true
   },
   "exclude": ["node_modules"],
   "include": ["src/**/*"],

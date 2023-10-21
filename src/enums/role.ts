@@ -10,5 +10,5 @@ export enum Role {
   Builder = 2,
   Hauler = 3,
   Claimer = 4,
-  SpawnBuilder = 5
+  Pioneer = 5
 }

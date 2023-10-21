@@ -31,12 +31,12 @@ export function run(creep: Creep) {
 }
 
 function runHarvestEnergy(creep: Creep) {
-  if (creep.isFull) {
-    creep.say('📥Discharge');
-    creep.setState(State.TransferEnergy);
-    runDischargeEnergy(creep);
-    return;
-  }
+  // if (creep.isFull) {
+  //   creep.say('📥Discharge');
+  //   creep.setState(State.TransferEnergy);
+  //   runDischargeEnergy(creep);
+  //   return;
+  // }
 
   const source = getTargetSource(creep);
   if (source) {
@@ -53,29 +53,29 @@ function runDischargeEnergy(creep: Creep) {
     runHarvestEnergy(creep);
     return;
   }
-  let targetStructure: AnyStructure | undefined | null = getTargetSinks(creep).find(
-    s => s.store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store[RESOURCE_ENERGY]
-  );
+  // let targetStructure: AnyStructure | undefined | null = getTargetSinks(creep).find(
+  //   s => s.store.getFreeCapacity(RESOURCE_ENERGY) >= creep.store[RESOURCE_ENERGY]
+  // );
 
-  targetStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-    filter: structure =>
-      structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-  });
+  // targetStructure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+  //   filter: structure =>
+  //     structure.structureType === STRUCTURE_CONTAINER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+  // });
 
-  if (targetStructure) {
-    if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
-    }
-  }
+  // if (targetStructure) {
+  //   if (creep.transfer(targetStructure, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+  //     moveTo(creep, targetStructure, { visualizePathStyle: { stroke: '#ffffff' } });
+  //   }
+  // }
 }
 
-function getTargetSinks(creep: Creep) {
-  const source = getTargetSource(creep);
-  if (!source) {
-    return [];
-  }
-  return creep.room.getSourceSinks(source.id);
-}
+// function getTargetSinks(creep: Creep) {
+//   const source = getTargetSource(creep);
+//   if (!source) {
+//     return [];
+//   }
+//   return creep.room.getSourceSinks(source.id);
+// }
 
 function getTargetSource(creep: Creep) {
   if (!creep.memory.source && creep.memory.target) {

@@ -29,12 +29,22 @@ export class RoomService {
     return rooms;
   }
 
+  public getToBuildSpawnRooms() {
+    const rooms: Room[] = [];
+    if (this.roomDictionary[RoomType.ToBuildSpawn]) {
+      rooms.push(...this.roomDictionary[RoomType.ToBuildSpawn]);
+    }
+    return rooms;
+  }
+
   /**
    * Creates an object of all rooms in the colony indexed by type using `Game.rooms`.
    */
   protected makeDictionary() {
     const rooms: RoomDictionary = {
-      [RoomType.Normal]: []
+      [RoomType.Normal]: [],
+      [RoomType.ToBuildSpawn]: [],
+      [RoomType.ToBuildBase]: []
     };
 
     for (const roomName in Game.rooms) {
@@ -42,6 +52,9 @@ export class RoomService {
 
       if (!room.controller || !room.controller.my || room.controller.level < 1) {
         continue;
+      }
+      if (!room.getMySpawn()) {
+        room.memory.t = RoomType.ToBuildSpawn;
       }
 
       if (!room.memory.t) {

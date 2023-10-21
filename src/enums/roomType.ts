@@ -3,5 +3,7 @@
  */
 
 export enum RoomType {
-  Normal = 1
+  Normal = 1,
+  ToBuildSpawn = 2,
+  ToBuildBase = 3
 }
