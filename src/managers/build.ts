@@ -33,7 +33,9 @@ export class BuildManager extends Manager {
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
-        const rooms = this.roomService.getNormalRooms();
+        const normalRooms = this.roomService.getNormalRooms();
+        const inDevRooms = this.roomService.getInDevRooms();
+        const rooms = normalRooms.concat(inDevRooms);
         this.organizeStructureBuilding(rooms);
         this.setValue(this.MEMORY_LASTRUN, Game.time);
       }

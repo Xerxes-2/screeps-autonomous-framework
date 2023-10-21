@@ -21,7 +21,9 @@ export class SpawnManager extends Manager {
   }
 
   public run() {
-    const rooms = this.roomService.getNormalRooms();
+    const normalRooms = this.roomService.getNormalRooms();
+    const inDevRooms = this.roomService.getInDevRooms();
+    const rooms = normalRooms.concat(inDevRooms);
     for (const room of rooms) {
       const spawns = room.find(FIND_MY_SPAWNS).filter(s => s.isActive() && !s.spawning);
       if (spawns.length) {

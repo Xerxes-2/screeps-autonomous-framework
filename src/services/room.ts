@@ -29,12 +29,16 @@ export class RoomService {
     return rooms;
   }
 
-  public getToBuildSpawnRooms() {
+  public getInDevRooms() {
     const rooms: Room[] = [];
-    if (this.roomDictionary[RoomType.ToBuildSpawn]) {
-      rooms.push(...this.roomDictionary[RoomType.ToBuildSpawn]);
+    if (this.roomDictionary[RoomType.InDev]) {
+      rooms.push(...this.roomDictionary[RoomType.InDev]);
     }
     return rooms;
+  }
+
+  public getAllRooms() {
+    return Object.values(this.roomDictionary).flat();
   }
 
   /**
@@ -43,8 +47,7 @@ export class RoomService {
   protected makeDictionary() {
     const rooms: RoomDictionary = {
       [RoomType.Normal]: [],
-      [RoomType.ToBuildSpawn]: [],
-      [RoomType.ToBuildBase]: []
+      [RoomType.InDev]: []
     };
 
     for (const roomName in Game.rooms) {
@@ -53,8 +56,8 @@ export class RoomService {
       if (!room.controller || !room.controller.my || room.controller.level < 1) {
         continue;
       }
-      if (!room.getMySpawn()) {
-        room.memory.t = RoomType.ToBuildSpawn;
+      if (room.controller.level < 3) {
+        room.memory.t = RoomType.InDev;
       }
 
       if (!room.memory.t) {

@@ -2,7 +2,7 @@
  * Common actions for different roles
  * @module
  */
-
+import { Role } from 'enums/role';
 import { moveTo } from 'screeps-cartographer';
 
 export function transferEnergy(creep: Creep) {
@@ -27,6 +27,36 @@ export function transferEnergy(creep: Creep) {
       filter: structure => structure.structureType === STRUCTURE_STORAGE && structure.store.getFreeCapacity() > 0
     });
     targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
+  }
+  if (!targetStructure) {
+    // directly transfer to builder and upgrader
+    // 3/4 chance to transfer to builder
+    // 1/4 chance to transfer to upgrader
+    const builder = creep.room
+      .find(FIND_MY_CREEPS, {
+        filter: c => c.memory.role === Role.Builder && c.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+      })
+      .shift();
+    const upgrader = creep.room
+      .find(FIND_MY_CREEPS, {
+        filter: c => c.memory.role === Role.Upgrader && c.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+      })
+      .shift();
+    const rand = Math.random();
+    if (rand < 0.75) {
+      if (builder) {
+        if (creep.transfer(builder, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+          moveTo(creep, builder, { visualizePathStyle: { stroke: '#ffffff' } });
+        }
+        return true;
+      }
+    }
+    if (upgrader) {
+      if (creep.transfer(upgrader, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        moveTo(creep, upgrader, { visualizePathStyle: { stroke: '#ffffff' } });
+      }
+      return true;
+    }
   }
 
   if (targetStructure) {

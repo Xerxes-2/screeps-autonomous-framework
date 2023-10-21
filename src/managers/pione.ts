@@ -33,7 +33,7 @@ export class PioneerManager extends Manager {
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
-        const rooms = this.roomService.getToBuildSpawnRooms();
+        const rooms = this.roomService.getInDevRooms();
         this.organizePioneering(rooms);
         this.setValue(this.MEMORY_LASTRUN, Game.time);
       }
@@ -51,7 +51,7 @@ export class PioneerManager extends Manager {
     const active = this.creepService.getCreeps(Role.Pioneer, room.name).length;
     const ordered = getCreepsInQueue(spawnRoom, Role.Pioneer, room.name);
 
-    if (active + ordered < 2) {
+    if (active + ordered < 3) {
       const order = new Order();
       const maxTier = getMaxTierSimpleWorker(spawnRoom.energyCapacityAvailable);
       order.body = getSimpleWorkerBody(maxTier);
