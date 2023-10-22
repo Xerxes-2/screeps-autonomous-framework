@@ -53,7 +53,17 @@ export class BuildManager extends Manager {
     const ordered = getCreepsInQueue(room, Role.Builder);
     const buildSites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-    if (active + ordered === 0 && buildSites.length > 0) {
+    const repairPoints = room
+      .find(FIND_STRUCTURES, {
+        filter: s => s.hits < s.hitsMax && s.structureType !== STRUCTURE_WALL && s.structureType !== STRUCTURE_RAMPART
+      })
+      .map(s => s.hitsMax - s.hits)
+      .reduce((a, b) => a + b, 0);
+    let max = Math.ceil(buildSites.length / 3);
+    if (repairPoints > 100_000) {
+      max += 1;
+    }
+    if (active + ordered < max) {
       const order = new Order();
       const maxTier = getMaxTierSimpleWorker(room.energyCapacityAvailable);
       order.body = getSimpleWorkerBody(maxTier);

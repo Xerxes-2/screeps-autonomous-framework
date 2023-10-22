@@ -30,6 +30,13 @@ export function run(creep: Creep) {
 function runHarvestEnergy(creep: Creep) {
   const source = getTargetSource(creep);
   if (source) {
+    const container = source.pos.findInRange(FIND_STRUCTURES, 1, {
+      filter: s => s.structureType === STRUCTURE_CONTAINER
+    })[0] as StructureContainer;
+    if (container && creep.pos.getRangeTo(container) > 0) {
+      creep.moveTo(container);
+      return;
+    }
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
       moveTo(creep, source, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
@@ -38,6 +45,7 @@ function runHarvestEnergy(creep: Creep) {
   const room = getTargetRoom(creep);
   // go to target room
   if (room && creep.room.name !== room.name) {
+    creep.say('🚚');
     travelTo(creep, room.name);
     return;
   }

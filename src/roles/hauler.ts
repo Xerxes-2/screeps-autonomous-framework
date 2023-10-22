@@ -41,12 +41,13 @@ function runHaulEnergy(creep: Creep) {
     return;
   }
   // energy on ground
-  const drop = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+  const drop = creep.room.find(FIND_DROPPED_RESOURCES, {
     filter: resource => resource.resourceType === RESOURCE_ENERGY
   });
-  if (drop) {
-    if (creep.pickup(drop) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, drop, { visualizePathStyle: { stroke: '#ffaa00' } });
+  const largestDrop = _.sortBy(drop, d => d.amount).pop();
+  if (largestDrop) {
+    if (creep.pickup(largestDrop) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, largestDrop, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
     return;
   }

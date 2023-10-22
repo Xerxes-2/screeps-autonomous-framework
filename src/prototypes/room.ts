@@ -30,6 +30,15 @@ declare global {
 
     /** Find all remote sinks */
     getRemoteSinks(): StructureContainer[];
+
+    /** @private */
+    _storedEnergy?: number;
+
+    /** Get stored energy */
+    getStoredEnergy(): number;
+
+    /** Get total construction energy needed */
+    getConstructionEnergy(): number;
   }
 }
 
@@ -89,4 +98,21 @@ Room.prototype.getRemoteSinks = function () {
     }
   }
   return this._remoteSinks;
+};
+
+Room.prototype.getStoredEnergy = function () {
+  if (!this._storedEnergy) {
+    const drops = this.find(FIND_DROPPED_RESOURCES, {
+      filter: r => r.resourceType === RESOURCE_ENERGY
+    });
+    const stores: (StructureContainer | StructureStorage)[] = this.find(FIND_STRUCTURES, {
+      filter: s => s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER
+    });
+    this._storedEnergy = _.sum(drops, d => d.amount) + _.sum(stores, s => s.store.getUsedCapacity(RESOURCE_ENERGY));
+  }
+  return this._storedEnergy;
+};
+
+Room.prototype.getConstructionEnergy = function () {
+  return this.find(FIND_MY_CONSTRUCTION_SITES).reduce((a, b) => a + b.progressTotal - b.progress, 0);
 };

@@ -34,6 +34,16 @@ export class TowerManager extends Manager {
         structure.structureType === STRUCTURE_TOWER && structure.store[RESOURCE_ENERGY] > TOWER_ENERGY_COST
     });
 
+    // if attacked by hostile creeps but no towers have energy, activate safe mode
+    if (
+      towersWithEnergy.length === 0 &&
+      room.find(FIND_HOSTILE_CREEPS, {
+        filter: creep => creep.getActiveBodyparts(ATTACK) > 0 || creep.getActiveBodyparts(RANGED_ATTACK) > 0
+      }).length > 0
+    ) {
+      room.controller?.activateSafeMode();
+    }
+
     for (const tower of towersWithEnergy) {
       const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
       if (closestHostile) {

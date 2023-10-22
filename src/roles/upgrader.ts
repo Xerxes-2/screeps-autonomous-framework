@@ -39,7 +39,7 @@ function runWithdrawEnergy(creep: Creep) {
     return;
   }
   // stop upgrading when energy in base is not full
-  if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+  if (creep.room.getStoredEnergy() < creep.room.energyCapacityAvailable) {
     return;
   }
 

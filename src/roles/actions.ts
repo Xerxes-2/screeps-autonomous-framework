@@ -69,6 +69,16 @@ export function transferEnergy(creep: Creep) {
 }
 
 export function withdrawEnergy(creep: Creep) {
+  const drops = creep.room.find(FIND_DROPPED_RESOURCES, {
+    filter: resource => resource.resourceType === RESOURCE_ENERGY
+  });
+  const largestDrop = _.sortBy(drops, d => d.amount).pop();
+  if (largestDrop) {
+    if (creep.pickup(largestDrop) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, largestDrop, { visualizePathStyle: { stroke: '#ffaa00' } });
+    }
+    return true;
+  }
   const banks: StructureContainer[] = creep.room.find(FIND_STRUCTURES, {
     filter: structure => structure.structureType === STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 0
   });

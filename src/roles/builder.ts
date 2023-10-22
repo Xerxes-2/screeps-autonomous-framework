@@ -43,7 +43,7 @@ function runWithdrawEnergy(creep: Creep) {
     return;
   }
   // stop building when energy in base is not full
-  if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+  if (creep.room.getStoredEnergy() < creep.room.energyCapacityAvailable) {
     return;
   }
   withdrawEnergy(creep);

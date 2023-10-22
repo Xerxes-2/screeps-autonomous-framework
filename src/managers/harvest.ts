@@ -6,7 +6,7 @@ import * as Harvester from 'roles/harvester';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getHarvesterBody, getMaxTierHarvester } from 'utils/profile';
+import { getHarvesterBody, getMaxTierHarvester, getRCL2HarvesterBody } from 'utils/profile';
 
 /**
  * The `HarvestManager` class orchestrates the energy gathering activities and behaviors of the bot.
@@ -77,8 +77,13 @@ export class HarvestManager extends Manager {
 
     if (active + ordered === 0) {
       const order = new Order();
-      const maxTier = getMaxTierHarvester(room.energyCapacityAvailable);
-      order.body = getHarvesterBody(maxTier);
+      let maxTier = getMaxTierHarvester(room.energyCapacityAvailable);
+      if (room.energyCapacityAvailable < 750 && room.energyCapacityAvailable >= 550) {
+        order.body = getRCL2HarvesterBody();
+        maxTier = 1;
+      } else {
+        order.body = getHarvesterBody(maxTier);
+      }
       if (room.name === sourceRoom) {
         order.priority = Priority.Important;
       } else {

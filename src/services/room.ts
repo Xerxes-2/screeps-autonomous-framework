@@ -58,9 +58,7 @@ export class RoomService {
       }
       if (room.controller.level < 3) {
         room.memory.t = RoomType.InDev;
-      }
-
-      if (!room.memory.t) {
+      } else {
         room.memory.t = RoomType.Normal;
       }
 

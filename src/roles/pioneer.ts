@@ -3,6 +3,7 @@
  * @module
  */
 
+import * as Action from 'roles/actions';
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 import { travelTo } from 'utils/pathfinder';
@@ -63,15 +64,13 @@ function runHarvestEnergy(creep: Creep) {
     runCharge(creep);
     return;
   }
-  const drop = creep.room
-    .find(FIND_DROPPED_RESOURCES, {
-      filter: resource => resource.resourceType === RESOURCE_ENERGY
-    })
-    .sort((a, b) => b.amount - a.amount)
-    .shift();
-  if (drop) {
-    if (creep.pickup(drop) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, drop, { visualizePathStyle: { stroke: '#ffaa00' } });
+  const drop = creep.room.find(FIND_DROPPED_RESOURCES, {
+    filter: resource => resource.resourceType === RESOURCE_ENERGY
+  });
+  const largestDrop = _.sortBy(drop, d => d.amount).pop();
+  if (largestDrop) {
+    if (creep.pickup(largestDrop) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, largestDrop, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
     return;
   }
@@ -103,16 +102,13 @@ function runCharge(creep: Creep) {
     runHarvestEnergy(creep);
     return;
   }
-  const spawn = creep.room.find(FIND_MY_SPAWNS)[0];
-  if (!spawn || creep.room.energyAvailable === creep.room.energyCapacityAvailable) {
-    creep.setState(State.Repair);
-    creep.say('🔧Repair');
-    runRepair(creep);
+  if (Action.transferEnergy(creep)) {
     return;
   }
-  if (creep.transfer(spawn, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-    moveTo(creep, spawn, { visualizePathStyle: { stroke: '#ffffff' } });
-  }
+  // repair
+  creep.setState(State.Repair);
+  creep.say('🔧Repair');
+  runRepair(creep);
 }
 
 function runRepair(creep: Creep) {

@@ -51,7 +51,7 @@ export class PioneerManager extends Manager {
     const active = this.creepService.getCreeps(Role.Pioneer, room.name).length;
     const ordered = getCreepsInQueue(spawnRoom, Role.Pioneer, room.name);
 
-    if (active + ordered < 2) {
+    if (active + ordered < 1) {
       const order = new Order();
       const maxTier = getMaxTierSimpleWorker(spawnRoom.energyCapacityAvailable);
       order.body = getSimpleWorkerBody(maxTier);

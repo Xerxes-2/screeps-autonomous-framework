@@ -23,6 +23,10 @@ export function getHarvesterBody(tier: number) {
   return body;
 }
 
+export function getRCL2HarvesterBody() {
+  return [WORK, WORK, WORK, WORK, WORK, MOVE];
+}
+
 /**
  * Determines the maximum size for a Harvester creep based on energy.
  * @param energy The maximum amount of energy to use for spawning the creep body.
