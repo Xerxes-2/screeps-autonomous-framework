@@ -29,6 +29,10 @@ export function run(creep: Creep) {
 
 function runHarvestEnergy(creep: Creep) {
   const source = getTargetSource(creep);
+  const room = getTargetRoomName(creep);
+  if (room && travelTo(creep, room)) {
+    return;
+  }
   if (source && source.room === creep.room) {
     const container = source.pos.findInRange(FIND_STRUCTURES, 1, {
       filter: s => s.structureType === STRUCTURE_CONTAINER
@@ -42,8 +46,6 @@ function runHarvestEnergy(creep: Creep) {
     }
     return;
   }
-  const room = getTargetRoomName(creep);
-  if (room) travelTo(creep, room);
 }
 
 function getTargetRoomName(creep: Creep) {

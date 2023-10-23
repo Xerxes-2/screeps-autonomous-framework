@@ -4,33 +4,9 @@
  */
 
 export function travelTo(creep: Creep, goalRoom: string, ops = 4000) {
-  // if with in 23 range of goal room, return false
-  const creepPos = creep.pos;
-  if (creepPos.roomName === goalRoom) {
-    if (creepPos.inRangeTo(25, 25, 24)) {
-      return false;
-    }
-  }
-
-  // const route = Game.map.findRoute(creep.room.name, goalRoom, {
-  //   routeCallback(roomName, fromRoomName) {
-  //     if (Game.map.getRoomStatus(roomName).status === 'closed') {
-  //       return Infinity;
-  //     }
-  //     if (
-  //       (Game.map.getRoomStatus(roomName).status === 'novice') !==
-  //       (Game.map.getRoomStatus(fromRoomName).status === 'novice')
-  //     ) {
-  //       return Infinity;
-  //     }
-  //   }
-  // });
-  // if (route === ERR_NO_PATH) {
-  //   return false;
-  // }
   const pfResult = PathFinder.search(
     creep.pos,
-    { pos: new RoomPosition(25, 25, goalRoom), range: 23 },
+    { pos: new RoomPosition(25, 25, goalRoom), range: 24 },
     {
       plainCost: 2,
       swampCost: 10,
@@ -39,7 +15,7 @@ export function travelTo(creep: Creep, goalRoom: string, ops = 4000) {
       roomCallback: roomName => {
         const room = Game.rooms[roomName];
         if (!room) {
-          return false;
+          return new PathFinder.CostMatrix();
         }
         const costs = new PathFinder.CostMatrix();
 
@@ -60,7 +36,6 @@ export function travelTo(creep: Creep, goalRoom: string, ops = 4000) {
         room.find(FIND_CREEPS).forEach(function (c) {
           costs.set(c.pos.x, c.pos.y, 0xff);
         });
-        // Avoid constructed walls
         // Avoid 3 range from hostile creeps
         room.find(FIND_HOSTILE_CREEPS).forEach(c => {
           if (c.owner.username === 'Source Keeper') {

@@ -21,6 +21,7 @@ export function run(creep: Creep) {
       runScoutRoom(creep);
       break;
     case State.Stay:
+      runStay(creep);
       break;
     default:
       logUnknownState(creep);
@@ -33,14 +34,20 @@ function runScoutRoom(creep: Creep) {
   const target = creep.memory.target;
   // go to target room
   if (target && !travelTo(creep, target)) {
+    const center = new RoomPosition(25, 25, target);
+    creep.move(creep.pos.getDirectionTo(center));
     creep.say('🚩Scouted');
     creep.setState(State.Stay);
     return;
   }
-  const lifetime = creep.ticksToLive;
-  if (lifetime && lifetime < 1300) {
-    creep.say('🚩Stay');
-    creep.setState(State.Stay);
+}
+
+function runStay(creep: Creep) {
+  // stay in target room
+  const target = creep.memory.target;
+  if (target && creep.room.name !== target) {
+    creep.say('🚩Scouting');
+    creep.setState(State.ScoutRoom);
     return;
   }
 }
