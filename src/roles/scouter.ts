@@ -3,7 +3,6 @@
  * @module
  */
 
-import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
 import { travelTo } from 'utils/pathfinder';
 
@@ -33,14 +32,10 @@ export function run(creep: Creep) {
 function runScoutRoom(creep: Creep) {
   const target = creep.memory.target;
   // go to target room
-  if (target) {
-    if (creep.room.name === target) {
-      moveTo(creep, new RoomPosition(25, 25, target), { visualizePathStyle: { stroke: '#ffffff' } });
-      creep.say('🚩Stay');
-      creep.setState(State.Stay);
-      return;
-    }
-    travelTo(creep, target);
+  if (target && !travelTo(creep, target)) {
+    creep.say('🚩Scouted');
+    creep.setState(State.Stay);
+    return;
   }
   const lifetime = creep.ticksToLive;
   if (lifetime && lifetime < 1300) {

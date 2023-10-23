@@ -51,7 +51,7 @@ export class BuildManager extends Manager {
   private orderBuilder(room: Room) {
     const active = this.creepService.getCreeps(Role.Builder, null, room.name).length;
     const ordered = getCreepsInQueue(room, Role.Builder);
-    const buildSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+    const buildSites = room.getConstructionSites();
 
     const repairPoints = room
       .find(FIND_STRUCTURES, {

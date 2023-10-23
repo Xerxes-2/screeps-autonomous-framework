@@ -14,19 +14,17 @@ export function transferEnergy(creep: Creep) {
       structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
   });
   if (!targetStructure) {
-    const banks: StructureContainer[] = creep.room.find(FIND_STRUCTURES, {
-      filter: structure =>
-        structure.structureType === STRUCTURE_CONTAINER &&
-        !creep.room.getAllSinks().includes(structure) &&
-        structure.store.getFreeCapacity() > 0
-    });
+    const nonSinkContainers = creep.room.getNonSinkContainers();
+    const banks = nonSinkContainers.filter(
+      c => c.store.getFreeCapacity(RESOURCE_ENERGY) > creep.store.getUsedCapacity()
+    );
     targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
   }
   if (!targetStructure) {
-    const banks: StructureStorage[] = creep.room.find(FIND_STRUCTURES, {
-      filter: structure => structure.structureType === STRUCTURE_STORAGE && structure.store.getFreeCapacity() > 0
-    });
-    targetStructure = _.sortBy(banks, b => b.store.getUsedCapacity()).shift();
+    const bank = creep.room.storage;
+    if (bank && bank.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+      targetStructure = bank;
+    }
   }
   if (!targetStructure) {
     // directly transfer to builder and upgrader
@@ -69,9 +67,7 @@ export function transferEnergy(creep: Creep) {
 }
 
 export function withdrawEnergy(creep: Creep) {
-  const drops = creep.room.find(FIND_DROPPED_RESOURCES, {
-    filter: resource => resource.resourceType === RESOURCE_ENERGY
-  });
+  const drops = creep.room.getDroppedEnergy();
   const largestDrop = _.sortBy(drops, d => d.amount).pop();
   if (largestDrop) {
     if (creep.pickup(largestDrop) === ERR_NOT_IN_RANGE) {

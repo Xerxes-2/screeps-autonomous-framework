@@ -37,8 +37,29 @@ declare global {
     /** Get stored energy */
     getStoredEnergy(): number;
 
-    /** Get total construction energy needed */
-    getConstructionEnergy(): number;
+    /** @private */
+    _constructionSites?: ConstructionSite[];
+
+    /** Get construction sites */
+    getConstructionSites(): ConstructionSite[];
+
+    /** @private */
+    _containers?: StructureContainer[];
+
+    /** Get all containers */
+    getContainers(): StructureContainer[];
+
+    /** @private */
+    _nonSinkContainers?: StructureContainer[];
+
+    /** Get all containers that are not sinks */
+    getNonSinkContainers(): StructureContainer[];
+
+    /** @private */
+    _droppedEnergy?: Resource[];
+
+    /** Get all dropped energy */
+    getDroppedEnergy(): Resource[];
   }
 }
 
@@ -80,7 +101,11 @@ Room.prototype.getRemoteRooms = function () {
   if (!this._remoteRooms) {
     this._remoteRooms = [];
     for (const roomName of Object.values(Game.map.describeExits(this.name))) {
-      this._remoteRooms.push(roomName);
+      if (roomName !== 'E5S38') this._remoteRooms.push(roomName);
+    }
+    // hard code remote rooms
+    if (this.name === 'E5S37') {
+      this._remoteRooms.push('E4S37');
     }
   }
   return this._remoteRooms;
@@ -113,6 +138,34 @@ Room.prototype.getStoredEnergy = function () {
   return this._storedEnergy;
 };
 
-Room.prototype.getConstructionEnergy = function () {
-  return this.find(FIND_MY_CONSTRUCTION_SITES).reduce((a, b) => a + b.progressTotal - b.progress, 0);
+Room.prototype.getConstructionSites = function () {
+  if (!this._constructionSites) {
+    this._constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES);
+  }
+  return this._constructionSites;
+};
+
+Room.prototype.getContainers = function () {
+  if (!this._containers) {
+    this._containers = this.find(FIND_STRUCTURES, {
+      filter: s => s.structureType === STRUCTURE_CONTAINER
+    });
+  }
+  return this._containers;
+};
+
+Room.prototype.getNonSinkContainers = function () {
+  if (!this._nonSinkContainers) {
+    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllSinks().includes(c));
+  }
+  return this._nonSinkContainers;
+};
+
+Room.prototype.getDroppedEnergy = function () {
+  if (!this._droppedEnergy) {
+    this._droppedEnergy = this.find(FIND_DROPPED_RESOURCES, {
+      filter: r => r.resourceType === RESOURCE_ENERGY
+    });
+  }
+  return this._droppedEnergy;
 };

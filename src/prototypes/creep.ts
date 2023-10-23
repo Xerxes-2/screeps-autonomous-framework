@@ -12,6 +12,8 @@ declare global {
     setState(state: number): void;
     /** Delete current state (task) for a creep */
     delState(): void;
+    /** If the creep is at room border */
+    isAtBorder(): boolean;
 
     /** @private */
     _states?: number[];
@@ -48,4 +50,8 @@ Creep.prototype.setState = function (state) {
 
 Creep.prototype.delState = function () {
   this.memory.state = undefined;
+};
+
+Creep.prototype.isAtBorder = function () {
+  return this.pos.x === 0 || this.pos.x === 49 || this.pos.y === 0 || this.pos.y === 49;
 };

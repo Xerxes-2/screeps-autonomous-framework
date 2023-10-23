@@ -47,10 +47,9 @@ export class RemoteManager extends Manager {
     for (const room of rooms) {
       // find neighboring rooms with construction sites or containers
       for (const remoteRoomName of room.getRemoteRooms()) {
+        this.orderScouter(room, remoteRoomName);
         const remoteRoom = Game.rooms[remoteRoomName];
-        if (!remoteRoom) {
-          this.orderScouter(room, remoteRoomName);
-        } else {
+        if (remoteRoom) {
           this.orderRemoteBuilder(room, remoteRoom);
           this.orderRemoteDefender(room, remoteRoom);
         }
@@ -64,7 +63,7 @@ export class RemoteManager extends Manager {
     if (activeCreeps.length + creepsInQueue === 0) {
       const order = new Order();
       order.body = [MOVE];
-      order.priority = Priority.Low;
+      order.priority = Priority.Critical;
       order.memory = {
         tier: 1,
         role: Role.Scout,
@@ -75,7 +74,7 @@ export class RemoteManager extends Manager {
   }
 
   private orderRemoteBuilder(homeroom: Room, remoteRoom: Room): void {
-    const constructionSites = remoteRoom.find(FIND_MY_CONSTRUCTION_SITES);
+    const constructionSites = remoteRoom.getConstructionSites();
     const containers = remoteRoom.find(FIND_STRUCTURES, {
       filter: s => s.structureType === STRUCTURE_CONTAINER
     });

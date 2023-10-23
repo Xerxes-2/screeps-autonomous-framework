@@ -64,9 +64,7 @@ function runHarvestEnergy(creep: Creep) {
     runCharge(creep);
     return;
   }
-  const drop = creep.room.find(FIND_DROPPED_RESOURCES, {
-    filter: resource => resource.resourceType === RESOURCE_ENERGY
-  });
+  const drop = creep.room.getDroppedEnergy();
   const largestDrop = _.sortBy(drop, d => d.amount).pop();
   if (largestDrop) {
     if (creep.pickup(largestDrop) === ERR_NOT_IN_RANGE) {
@@ -76,9 +74,7 @@ function runHarvestEnergy(creep: Creep) {
   }
   const sources = creep.room.find(FIND_SOURCES_ACTIVE);
   if (sources.length === 0) {
-    const containers = creep.room.find(FIND_STRUCTURES, {
-      filter: structure => structure.structureType === STRUCTURE_CONTAINER
-    });
+    const containers = creep.room.getContainers();
     if (containers.length === 0) {
       creep.say('🚩No source');
       return;
@@ -139,7 +135,7 @@ function runBuild(creep: Creep) {
     runHarvestEnergy(creep);
     return;
   }
-  const constructionSite = creep.room.find(FIND_MY_CONSTRUCTION_SITES)[0];
+  const constructionSite = creep.room.getConstructionSites()?.[0];
   if (!constructionSite) {
     creep.setState(State.Upgrade);
     creep.say('⚡Upgrade');

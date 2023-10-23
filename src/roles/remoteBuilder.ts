@@ -44,12 +44,7 @@ function runWithdrawEnergy(creep: Creep) {
     return;
   }
   // go to homeroom
-  if (creep.memory.homeroom && creep.room.name !== creep.memory.homeroom) {
-    travelTo(creep, creep.memory.homeroom);
-    return;
-  }
-  // stop building when energy in base is not full
-  if (creep.room.energyAvailable < creep.room.energyCapacityAvailable) {
+  if (travelTo(creep, creep.memory.homeroom!)) {
     return;
   }
   withdrawEnergy(creep);
@@ -63,12 +58,11 @@ function runBuildConstruction(creep: Creep) {
     return;
   }
   // go to target room
-  if (creep.memory.target && creep.room.name !== creep.memory.target) {
-    travelTo(creep, creep.memory.target);
+  if (travelTo(creep, creep.memory.target!)) {
     return;
   }
 
-  const constructionSite = creep.room.find(FIND_CONSTRUCTION_SITES)?.[0];
+  const constructionSite = creep.room.getConstructionSites()?.[0];
   if (constructionSite) {
     if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
       moveTo(creep, constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
@@ -88,9 +82,7 @@ function runRepairStructure(creep: Creep) {
     return;
   }
 
-  const structure = creep.room.find(FIND_STRUCTURES, {
-    filter: s => s.hits < s.hitsMax && (s.structureType === STRUCTURE_ROAD || s.structureType === STRUCTURE_CONTAINER)
-  })?.[0];
+  const structure = creep.room.getContainers().find(c => c.hits < c.hitsMax);
   if (structure) {
     if (creep.repair(structure) === ERR_NOT_IN_RANGE) {
       moveTo(creep, structure, { visualizePathStyle: { stroke: '#ffffff' } });

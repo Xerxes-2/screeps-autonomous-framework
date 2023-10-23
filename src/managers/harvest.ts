@@ -3,10 +3,17 @@ import { Priority } from 'enums/priority';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
 import * as Harvester from 'roles/harvester';
+import * as RemoteHauler from 'roles/remoteHauler';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getHarvesterBody, getMaxTierHarvester, getRCL2HarvesterBody } from 'utils/profile';
+import {
+  getHarvesterBody,
+  getHaulerBody,
+  getMaxTierHarvester,
+  getMaxTierHauler,
+  getRCL2HarvesterBody
+} from 'utils/profile';
 
 /**
  * The `HarvestManager` class orchestrates the energy gathering activities and behaviors of the bot.
@@ -30,6 +37,7 @@ export class HarvestManager extends Manager {
   public run(pri: Priority) {
     if (pri === Priority.Low) {
       this.creepService.runCreepRoles(Role.Harvester, Harvester.run);
+      this.creepService.runCreepRoles(Role.RemoteHauler, RemoteHauler.run);
 
       const lastRun = this.getValue(this.MEMORY_LASTRUN);
       if (!lastRun || lastRun + 20 < Game.time) {
@@ -63,6 +71,9 @@ export class HarvestManager extends Manager {
       }
       this.orderHarvesters(room, sourceId, sourceRoom.name);
     }
+    if (remoteSinks.length > 0) {
+      this.orderRemoteHauler(room);
+    }
   }
 
   private orderHarvesters(room: Room, sourceId: string, sourceRoom: string) {
@@ -95,6 +106,26 @@ export class HarvestManager extends Manager {
         target: sourceTarget
       };
       orderCreep(room, order);
+    }
+  }
+
+  private orderRemoteHauler(homeroom: Room): void {
+    if (homeroom.getRemoteSinks().length === 0) {
+      return;
+    }
+    const activeCreeps = this.creepService.getCreeps(Role.RemoteHauler, null, homeroom.name);
+    const creepsInQueue = getCreepsInQueue(homeroom, Role.RemoteHauler);
+
+    if (activeCreeps.length + creepsInQueue < 2) {
+      const order = new Order();
+      const maxTier = getMaxTierHauler(homeroom.energyCapacityAvailable);
+      order.body = getHaulerBody(maxTier);
+      order.priority = Priority.Low;
+      order.memory = {
+        tier: maxTier,
+        role: Role.RemoteHauler
+      };
+      orderCreep(homeroom, order);
     }
   }
 }

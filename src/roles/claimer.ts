@@ -34,11 +34,11 @@ function runClaim(creep: Creep) {
   }
   const targetController = getTargetController(creep);
   if (targetController) {
-    if (creep.claimController(targetController) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, targetController, { visualizePathStyle: { stroke: '#ffffff' } });
+    if (!travelTo(creep, creep.memory.target)) {
+      if (creep.claimController(targetController) === ERR_NOT_IN_RANGE) {
+        moveTo(creep, targetController, { visualizePathStyle: { stroke: '#ffffff' } });
+      }
     }
-  } else {
-    travelTo(creep, creep.memory.target);
   }
 }
 

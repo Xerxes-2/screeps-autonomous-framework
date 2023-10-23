@@ -5,7 +5,7 @@
 
 import { moveTo } from 'screeps-cartographer';
 import { logUnknownState } from 'utils/creep';
-import { marchTo } from 'utils/pathfinder';
+import { travelTo } from 'utils/pathfinder';
 
 enum State {
   MoveToRoom = 1,
@@ -33,7 +33,7 @@ export function run(creep: Creep) {
 
 function runMoveToRoom(creep: Creep) {
   if (creep.memory.target && creep.room.name !== creep.memory.target) {
-    marchTo(creep, creep.memory.target);
+    travelTo(creep, creep.memory.target);
     return;
   }
   creep.setState(State.DefendRoom);
