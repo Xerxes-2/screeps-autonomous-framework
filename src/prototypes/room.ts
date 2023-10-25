@@ -63,6 +63,10 @@ declare global {
 
     /** Tell is the room in novice area */
     IsNovice(): boolean;
+
+    /** @private */
+    _storageLink?: StructureLink | null;
+    getStorageLink(): StructureLink | null;
   }
 }
 
@@ -175,4 +179,20 @@ Room.prototype.getDroppedEnergy = function () {
 
 Room.prototype.IsNovice = function () {
   return Game.map.getRoomStatus(this.name).status === 'novice';
+};
+
+Room.prototype.getStorageLink = function () {
+  if (this._storageLink === undefined) {
+    this._storageLink = null;
+    const storage = this.storage;
+    if (storage) {
+      const link = storage.pos.findInRange(FIND_STRUCTURES, 2, {
+        filter: s => s.structureType === STRUCTURE_LINK
+      })[0] as StructureLink | undefined;
+      if (link) {
+        this._storageLink = link;
+      }
+    }
+  }
+  return this._storageLink;
 };

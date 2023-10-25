@@ -59,8 +59,17 @@ function runHaulEnergy(creep: Creep) {
     }
   }
 
-  const sinks = homeroom.getAllSourceTanks();
-  let target: AnyStructure = sinks
+  let target: AnyStructure | null | undefined;
+  const storageLink = homeroom.getStorageLink();
+  if (
+    storageLink &&
+    storageLink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
+  ) {
+    target = storageLink;
+  }
+
+  target ??= homeroom
+    .getAllSourceTanks()
     .filter(sink => sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY))
     .sort((a, b) => {
       const aFree = a.store.getFreeCapacity(RESOURCE_ENERGY);
@@ -68,12 +77,13 @@ function runHaulEnergy(creep: Creep) {
       return aFree - bFree;
     })[0];
 
-  target ??= homeroom.find(FIND_STRUCTURES, {
-    filter: structure =>
-      structure.structureType === STRUCTURE_STORAGE &&
-      structure.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY) &&
-      homeroom.energyAvailable < homeroom.energyCapacityAvailable
-  })[0];
+  if (
+    homeroom.storage &&
+    homeroom.storage.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY) &&
+    homeroom.energyAvailable < homeroom.energyCapacityAvailable
+  ) {
+    target = homeroom.storage;
+  }
 
   if (target) {
     if (travelTo(creep, target.room.name)) {
