@@ -75,10 +75,8 @@ export class RemoteManager extends Manager {
 
   private orderRemoteBuilder(homeroom: Room, remoteRoom: Room): void {
     const constructionSites = remoteRoom.getConstructionSites();
-    const containers = remoteRoom.find(FIND_STRUCTURES, {
-      filter: s => s.structureType === STRUCTURE_CONTAINER
-    });
-    if (constructionSites.length === 0 && containers.every(c => c.hits >= 100_000)) {
+    const containers = remoteRoom.getContainers();
+    if (constructionSites.length === 0 && containers.every(c => c.hits >= 150_000)) {
       return;
     }
 
@@ -90,7 +88,7 @@ export class RemoteManager extends Manager {
       const body = getSimpleWorkerBody(maxTier);
       const order = new Order();
       order.body = body;
-      order.priority = Priority.Low;
+      order.priority = Priority.Important;
       order.memory = {
         tier: maxTier,
         role: Role.RemoteBuilder,

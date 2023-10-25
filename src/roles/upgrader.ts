@@ -38,10 +38,6 @@ function runWithdrawEnergy(creep: Creep) {
     runUpgradeController(creep);
     return;
   }
-  // stop upgrading when energy in base is not full
-  if (creep.room.getStoredEnergy() < creep.room.energyCapacityAvailable) {
-    return;
-  }
 
   withdrawEnergy(creep);
 }
@@ -53,8 +49,18 @@ function runUpgradeController(creep: Creep) {
     runWithdrawEnergy(creep);
     return;
   }
+  const homeroomName = creep.memory.homeroom;
+  if (!homeroomName) {
+    creep.say('🚩No room');
+    return;
+  }
+  const homeroom = Game.rooms[homeroomName];
+  if (!homeroom) {
+    creep.say('🚩No room');
+    return;
+  }
 
-  const { controller } = creep.room;
+  const controller = homeroom.controller;
   if (controller) {
     if (creep.upgradeController(controller) === ERR_NOT_IN_RANGE) {
       moveTo(creep, controller, { visualizePathStyle: { stroke: '#ffffff' } });

@@ -59,7 +59,7 @@ export class BuildManager extends Manager {
       })
       .map(s => s.hitsMax - s.hits)
       .reduce((a, b) => a + b, 0);
-    let max = Math.ceil(buildSites.length / 3);
+    let max = Math.ceil(buildSites.length / 5);
     if (repairPoints > 100_000) {
       max += 1;
     }

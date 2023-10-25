@@ -3,7 +3,7 @@
  * @module
  */
 
-export function travelTo(creep: Creep, goalRoom: string, ops = 4000) {
+export function travelTo(creep: Creep, goalRoom: string, ops = 2000) {
   const pfResult = PathFinder.search(
     creep.pos,
     { pos: new RoomPosition(25, 25, goalRoom), range: 24 },

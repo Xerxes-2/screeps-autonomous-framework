@@ -44,10 +44,10 @@ function runWithdrawEnergy(creep: Creep) {
     return;
   }
   // go to homeroom
-  if (travelTo(creep, creep.memory.homeroom!)) {
+  if (withdrawEnergy(creep)) {
     return;
   }
-  withdrawEnergy(creep);
+  travelTo(creep, creep.memory.homeroom!);
 }
 
 function runBuildConstruction(creep: Creep) {
@@ -70,7 +70,6 @@ function runBuildConstruction(creep: Creep) {
   } else {
     creep.say('🔧Repair');
     creep.setState(State.RepairStructure);
-    runRepairStructure(creep);
   }
 }
 
@@ -81,11 +80,16 @@ function runRepairStructure(creep: Creep) {
     runWithdrawEnergy(creep);
     return;
   }
-
+  if (travelTo(creep, creep.memory.target!)) {
+    return;
+  }
   const structure = creep.room.getContainers().find(c => c.hits < c.hitsMax);
   if (structure) {
     if (creep.repair(structure) === ERR_NOT_IN_RANGE) {
       moveTo(creep, structure, { visualizePathStyle: { stroke: '#ffffff' } });
     }
+  } else {
+    creep.say('🔨Build');
+    creep.setState(State.BuildConstruction);
   }
 }

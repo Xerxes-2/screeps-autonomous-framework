@@ -57,9 +57,7 @@ export class UpgradeManager extends Manager {
     const ordered = getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
 
     let maxUpgraderCount = 1;
-    const containers = room.getContainers();
-    const containersFree = containers.some(c => c.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-    if (!containersFree && containers.length > 0) {
+    if (room.getStoredEnergy() >= room.energyCapacityAvailable * 20) {
       maxUpgraderCount = Math.min(active + 1, 5);
     }
     if (active + ordered < maxUpgraderCount) {

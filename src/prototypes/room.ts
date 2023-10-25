@@ -60,6 +60,9 @@ declare global {
 
     /** Get all dropped energy */
     getDroppedEnergy(): Resource[];
+
+    /** Tell is the room in novice area */
+    IsNovice(): boolean;
   }
 }
 
@@ -127,13 +130,13 @@ Room.prototype.getRemoteSinks = function () {
 
 Room.prototype.getStoredEnergy = function () {
   if (!this._storedEnergy) {
-    const drops = this.find(FIND_DROPPED_RESOURCES, {
-      filter: r => r.resourceType === RESOURCE_ENERGY
-    });
-    const stores: (StructureContainer | StructureStorage)[] = this.find(FIND_STRUCTURES, {
-      filter: s => s.structureType === STRUCTURE_STORAGE || s.structureType === STRUCTURE_CONTAINER
-    });
-    this._storedEnergy = _.sum(drops, d => d.amount) + _.sum(stores, s => s.store.getUsedCapacity(RESOURCE_ENERGY));
+    const drops = this.getDroppedEnergy();
+    const containers = this.getContainers();
+    const storage = this.storage;
+    this._storedEnergy =
+      _.sum(drops, d => d.amount) +
+      _.sum(containers, c => c.store[RESOURCE_ENERGY]) +
+      (storage ? storage.store[RESOURCE_ENERGY] : 0);
   }
   return this._storedEnergy;
 };
@@ -168,4 +171,8 @@ Room.prototype.getDroppedEnergy = function () {
     });
   }
   return this._droppedEnergy;
+};
+
+Room.prototype.IsNovice = function () {
+  return Game.map.getRoomStatus(this.name).status === 'novice';
 };
