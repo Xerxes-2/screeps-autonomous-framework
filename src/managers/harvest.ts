@@ -95,6 +95,14 @@ export class HarvestManager extends Manager {
       } else {
         order.body = getHarvesterBody(maxTier);
       }
+      const sourceRoomObj = Game.rooms[sourceRoom];
+      if (
+        sourceRoomObj &&
+        sourceRoomObj.getSourceTanks(sourceId as Id<Source>).some(t => t.structureType === STRUCTURE_LINK) &&
+        room.energyCapacityAvailable >= 850
+      ) {
+        order.body.push(CARRY, CARRY);
+      }
       if (room.name === sourceRoom) {
         order.priority = Priority.Important;
       } else {

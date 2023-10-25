@@ -61,10 +61,7 @@ function runHaulEnergy(creep: Creep) {
 
   let target: AnyStructure | null | undefined;
   const storageLink = homeroom.getStorageLink();
-  if (
-    storageLink &&
-    storageLink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
-  ) {
+  if (storageLink && storageLink.store.getFreeCapacity(RESOURCE_ENERGY) < 100) {
     target = storageLink;
   }
 
@@ -78,6 +75,7 @@ function runHaulEnergy(creep: Creep) {
     })[0];
 
   if (
+    !target &&
     homeroom.storage &&
     homeroom.storage.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY) &&
     homeroom.energyAvailable < homeroom.energyCapacityAvailable

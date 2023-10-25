@@ -8,7 +8,8 @@ import { logUnknownState } from 'utils/creep';
 import { travelTo } from 'utils/pathfinder';
 
 enum State {
-  HarvestEnergy = 1
+  HarvestEnergy = 1,
+  TransferEnergy = 2
 }
 
 export function run(creep: Creep) {
@@ -20,6 +21,9 @@ export function run(creep: Creep) {
     case State.HarvestEnergy:
       runHarvestEnergy(creep);
       break;
+    case State.TransferEnergy:
+      runTransferEnergy(creep);
+      break;
     default:
       logUnknownState(creep);
       creep.setState(State.HarvestEnergy);
@@ -28,6 +32,11 @@ export function run(creep: Creep) {
 }
 
 function runHarvestEnergy(creep: Creep) {
+  if (creep.isFull) {
+    creep.setState(State.TransferEnergy);
+    runTransferEnergy(creep);
+    return;
+  }
   const source = getTargetSource(creep);
   const room = getTargetRoomName(creep);
   if (room && travelTo(creep, room)) {
@@ -48,6 +57,22 @@ function runHarvestEnergy(creep: Creep) {
   }
 }
 
+function runTransferEnergy(creep: Creep) {
+  if (!creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
+    creep.setState(State.HarvestEnergy);
+    runHarvestEnergy(creep);
+    return;
+  }
+  const link = getTargetLink(creep);
+  if (link) {
+    creep.transfer(link, RESOURCE_ENERGY);
+    return;
+  }
+  creep.say('No Link');
+  // drop energy
+  creep.drop(RESOURCE_ENERGY);
+}
+
 function getTargetRoomName(creep: Creep) {
   if (!creep.memory.target) {
     return null;
@@ -63,4 +88,17 @@ function getTargetSource(creep: Creep) {
     return null;
   }
   return Game.getObjectById(creep.memory.source);
+}
+
+function getTargetLink(creep: Creep) {
+  const room = getTargetRoomName(creep);
+  const sourceId = creep.memory.source;
+  if (!room || !sourceId) {
+    return null;
+  }
+  const link = Game.rooms[room].getSourceTanks(sourceId).find(t => t.structureType === STRUCTURE_LINK);
+  if (!link) {
+    return null;
+  }
+  return link as StructureLink;
 }

@@ -22,7 +22,7 @@ declare global {
 
 Object.defineProperty(Creep.prototype, 'isFull', {
   get(this: Creep) {
-    return !this.store.getFreeCapacity();
+    return this.store.getCapacity() && !this.store.getFreeCapacity();
   }
 });
 
