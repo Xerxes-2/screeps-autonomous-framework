@@ -9,16 +9,16 @@ declare global {
     _mySpawn?: StructureSpawn;
 
     /** Find the sinks for the source */
-    getSourceTanks(source: Id<Source>): StructureContainer[];
+    getSourceTanks(source: Id<Source>): (StructureContainer | StructureLink)[];
 
     /** Find all sinks in room */
-    getAllTanks(): StructureContainer[];
+    getAllSourceTanks(): (StructureContainer | StructureLink)[];
 
     /** @private */
-    _sourceTanksMap?: Record<Id<Source>, StructureContainer[]>;
+    _sourceTanksMap?: Record<Id<Source>, (StructureContainer | StructureLink)[]>;
 
     /** @private */
-    _allTanks?: StructureContainer[];
+    _allTanks?: (StructureContainer | StructureLink)[];
 
     /** @private */
     _remoteRooms?: string[];
@@ -83,13 +83,13 @@ Room.prototype.getSourceTanks = function (sourceId: Id<Source>) {
       return [];
     }
     this._sourceTanksMap[sourceId] = source.pos.findInRange(FIND_STRUCTURES, 2, {
-      filter: s => s.structureType === STRUCTURE_CONTAINER
+      filter: s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_LINK
     });
   }
   return this._sourceTanksMap[sourceId];
 };
 
-Room.prototype.getAllTanks = function () {
+Room.prototype.getAllSourceTanks = function () {
   if (!this._allTanks) {
     this._sourceTanksMap = {};
     for (const source of this.find(FIND_SOURCES)) {
@@ -122,7 +122,7 @@ Room.prototype.getRemoteTanks = function () {
       if (!room) {
         continue;
       }
-      this._remoteTanks.push(...room.getAllTanks());
+      this._remoteTanks.push(...(room.getAllSourceTanks() as StructureContainer[]));
     }
   }
   return this._remoteTanks;
@@ -159,7 +159,7 @@ Room.prototype.getContainers = function () {
 
 Room.prototype.getNonSinkContainers = function () {
   if (!this._nonSinkContainers) {
-    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllTanks().includes(c));
+    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllSourceTanks().includes(c));
   }
   return this._nonSinkContainers;
 };
