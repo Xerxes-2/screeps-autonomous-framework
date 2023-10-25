@@ -29,7 +29,7 @@ export class LinkManager extends Manager {
   }
 
   private controlLinks(room: Room) {
-    const sourceLinks = room.getAllSourceTanks().filter(s => s.structureType === STRUCTURE_LINK) as StructureLink[];
+    const sourceLinks = room.getAllTanks().filter(s => s.structureType === STRUCTURE_LINK) as StructureLink[];
     const storageLink = room.getStorageLink();
     if (!storageLink || !sourceLinks.length) {
       return;

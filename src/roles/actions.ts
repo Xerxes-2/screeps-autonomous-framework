@@ -70,7 +70,7 @@ export function transferEnergy(creep: Creep) {
 
 export function withdrawEnergy(creep: Creep) {
   const containers = creep.room.getContainers();
-  const sinks = creep.room.getAllSourceTanks();
+  const sinks = creep.room.getAllTanks();
   const banks = containers.filter(
     c => !sinks.includes(c) && c.store.getUsedCapacity(RESOURCE_ENERGY) > creep.store.getFreeCapacity()
   );

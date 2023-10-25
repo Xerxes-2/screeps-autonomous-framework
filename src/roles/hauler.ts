@@ -66,7 +66,7 @@ function runHaulEnergy(creep: Creep) {
   }
 
   target ??= homeroom
-    .getAllSourceTanks()
+    .getAllTanks()
     .filter(sink => sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY))
     .sort((a, b) => {
       const aFree = a.store.getFreeCapacity(RESOURCE_ENERGY);

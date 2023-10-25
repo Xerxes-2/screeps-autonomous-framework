@@ -9,13 +9,13 @@ declare global {
     _mySpawn?: StructureSpawn;
 
     /** Find the sinks for the source */
-    getSourceTanks(source: Id<Source>): (StructureContainer | StructureLink)[];
+    getSourceTanks(source: Id<Source | Mineral>): (StructureContainer | StructureLink)[];
 
     /** Find all sinks in room */
-    getAllSourceTanks(): (StructureContainer | StructureLink)[];
+    getAllTanks(): (StructureContainer | StructureLink)[];
 
     /** @private */
-    _sourceTanksMap?: Record<Id<Source>, (StructureContainer | StructureLink)[]>;
+    _sourceTanksMap?: Record<Id<Source | Mineral>, (StructureContainer | StructureLink)[]>;
 
     /** @private */
     _allTanks?: (StructureContainer | StructureLink)[];
@@ -67,6 +67,11 @@ declare global {
     /** @private */
     _storageLink?: StructureLink | null;
     getStorageLink(): StructureLink | null;
+
+    /** @private */
+    _mineral?: Mineral | null;
+
+    getMineral(): Mineral | null;
   }
 }
 
@@ -77,7 +82,7 @@ Room.prototype.getMySpawn = function () {
   return this._mySpawn;
 };
 
-Room.prototype.getSourceTanks = function (sourceId: Id<Source>) {
+Room.prototype.getSourceTanks = function (sourceId: Id<Source | Mineral>) {
   if (!this._sourceTanksMap) {
     this._sourceTanksMap = {};
   }
@@ -93,11 +98,15 @@ Room.prototype.getSourceTanks = function (sourceId: Id<Source>) {
   return this._sourceTanksMap[sourceId];
 };
 
-Room.prototype.getAllSourceTanks = function () {
+Room.prototype.getAllTanks = function () {
   if (!this._allTanks) {
     this._sourceTanksMap = {};
     for (const source of this.find(FIND_SOURCES)) {
       this.getSourceTanks(source.id);
+    }
+    const minerals = this.getMineral();
+    if (minerals) {
+      this.getSourceTanks(minerals.id);
     }
     this._allTanks = _.flatten(Object.values(this._sourceTanksMap));
   }
@@ -126,7 +135,7 @@ Room.prototype.getRemoteTanks = function () {
       if (!room) {
         continue;
       }
-      this._remoteTanks.push(...(room.getAllSourceTanks() as StructureContainer[]));
+      this._remoteTanks.push(...(room.getAllTanks() as StructureContainer[]));
     }
   }
   return this._remoteTanks;
@@ -163,7 +172,7 @@ Room.prototype.getContainers = function () {
 
 Room.prototype.getNonSinkContainers = function () {
   if (!this._nonSinkContainers) {
-    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllSourceTanks().includes(c));
+    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllTanks().includes(c));
   }
   return this._nonSinkContainers;
 };
@@ -195,4 +204,22 @@ Room.prototype.getStorageLink = function () {
     }
   }
   return this._storageLink;
+};
+
+Room.prototype.getMineral = function () {
+  if (this._mineral) {
+    return this._mineral;
+  }
+  this._mineral = null;
+  const mineral = this.find(FIND_MINERALS)[0];
+  if (!mineral) {
+    return this._mineral;
+  }
+  const extractor = mineral.pos.findInRange(FIND_STRUCTURES, 1, {
+    filter: s => s.structureType === STRUCTURE_EXTRACTOR
+  })[0] as StructureExtractor | undefined;
+  if (extractor) {
+    this._mineral = mineral;
+  }
+  return this._mineral;
 };
