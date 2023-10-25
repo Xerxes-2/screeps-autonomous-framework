@@ -85,12 +85,13 @@ export class RemoteManager extends Manager {
 
     if (activeCreeps.length + creepsInQueue === 0) {
       const maxTier = getMaxTierSimpleWorker(homeroom.energyCapacityAvailable);
-      const body = getSimpleWorkerBody(maxTier);
+      const tier = Math.min(maxTier, 5);
+      const body = getSimpleWorkerBody(tier);
       const order = new Order();
       order.body = body;
       order.priority = Priority.Important;
       order.memory = {
-        tier: maxTier,
+        tier,
         role: Role.RemoteBuilder,
         target: remoteRoom.name
       };
