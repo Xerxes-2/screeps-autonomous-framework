@@ -59,7 +59,7 @@ function runHaulEnergy(creep: Creep) {
     }
   }
 
-  const sinks = homeroom.getAllSinks();
+  const sinks = homeroom.getAllTanks();
   let target: AnyStructure = sinks
     .filter(sink => sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY))
     .sort((a, b) => {

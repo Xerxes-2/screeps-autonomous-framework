@@ -62,7 +62,7 @@ export class HarvestManager extends Manager {
     }
   }
   private organizeRemoteEnergyHarvesting(room: Room) {
-    const remoteSinks = room.getRemoteSinks();
+    const remoteSinks = room.getRemoteTanks();
     for (const sink of remoteSinks) {
       const sourceRoom = sink.room;
       const sourceId = sink.pos.findInRange(FIND_SOURCES, 1)[0].id;
@@ -110,7 +110,7 @@ export class HarvestManager extends Manager {
   }
 
   private orderRemoteHauler(homeroom: Room): void {
-    if (homeroom.getRemoteSinks().length === 0) {
+    if (homeroom.getRemoteTanks().length === 0) {
       return;
     }
     const activeCreeps = this.creepService.getCreeps(Role.RemoteHauler, null, homeroom.name);

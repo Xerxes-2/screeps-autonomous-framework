@@ -9,16 +9,16 @@ declare global {
     _mySpawn?: StructureSpawn;
 
     /** Find the sinks for the source */
-    getSourceSinks(source: Id<Source>): StructureContainer[];
+    getSourceTanks(source: Id<Source>): StructureContainer[];
 
     /** Find all sinks in room */
-    getAllSinks(): StructureContainer[];
+    getAllTanks(): StructureContainer[];
 
     /** @private */
-    _sourceSinksMap?: { [source: Id<Source>]: StructureContainer[] };
+    _sourceTanksMap?: Record<Id<Source>, StructureContainer[]>;
 
     /** @private */
-    _allSinks?: StructureContainer[];
+    _allTanks?: StructureContainer[];
 
     /** @private */
     _remoteRooms?: string[];
@@ -26,10 +26,10 @@ declare global {
     /** Find all remote rooms */
     getRemoteRooms(): string[];
 
-    _remoteSinks?: StructureContainer[];
+    _remoteTanks?: StructureContainer[];
 
     /** Find all remote sinks */
-    getRemoteSinks(): StructureContainer[];
+    getRemoteTanks(): StructureContainer[];
 
     /** @private */
     _storedEnergy?: number;
@@ -73,31 +73,31 @@ Room.prototype.getMySpawn = function () {
   return this._mySpawn;
 };
 
-Room.prototype.getSourceSinks = function (sourceId: Id<Source>) {
-  if (!this._sourceSinksMap) {
-    this._sourceSinksMap = {};
+Room.prototype.getSourceTanks = function (sourceId: Id<Source>) {
+  if (!this._sourceTanksMap) {
+    this._sourceTanksMap = {};
   }
-  if (!this._sourceSinksMap[sourceId]) {
+  if (!this._sourceTanksMap[sourceId]) {
     const source = Game.getObjectById(sourceId);
     if (!source) {
       return [];
     }
-    this._sourceSinksMap[sourceId] = source.pos.findInRange(FIND_STRUCTURES, 2, {
+    this._sourceTanksMap[sourceId] = source.pos.findInRange(FIND_STRUCTURES, 2, {
       filter: s => s.structureType === STRUCTURE_CONTAINER
     });
   }
-  return this._sourceSinksMap[sourceId];
+  return this._sourceTanksMap[sourceId];
 };
 
-Room.prototype.getAllSinks = function () {
-  if (!this._allSinks) {
-    this._sourceSinksMap = {};
+Room.prototype.getAllTanks = function () {
+  if (!this._allTanks) {
+    this._sourceTanksMap = {};
     for (const source of this.find(FIND_SOURCES)) {
-      this.getSourceSinks(source.id);
+      this.getSourceTanks(source.id);
     }
-    this._allSinks = _.flatten(Object.values(this._sourceSinksMap));
+    this._allTanks = _.flatten(Object.values(this._sourceTanksMap));
   }
-  return this._allSinks;
+  return this._allTanks;
 };
 
 Room.prototype.getRemoteRooms = function () {
@@ -114,18 +114,18 @@ Room.prototype.getRemoteRooms = function () {
   return this._remoteRooms;
 };
 
-Room.prototype.getRemoteSinks = function () {
-  if (!this._remoteSinks) {
-    this._remoteSinks = [];
+Room.prototype.getRemoteTanks = function () {
+  if (!this._remoteTanks) {
+    this._remoteTanks = [];
     for (const roomName of this.getRemoteRooms()) {
       const room = Game.rooms[roomName];
       if (!room) {
         continue;
       }
-      this._remoteSinks.push(...room.getAllSinks());
+      this._remoteTanks.push(...room.getAllTanks());
     }
   }
-  return this._remoteSinks;
+  return this._remoteTanks;
 };
 
 Room.prototype.getStoredEnergy = function () {
@@ -159,7 +159,7 @@ Room.prototype.getContainers = function () {
 
 Room.prototype.getNonSinkContainers = function () {
   if (!this._nonSinkContainers) {
-    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllSinks().includes(c));
+    this._nonSinkContainers = this.getContainers().filter(c => !this.getAllTanks().includes(c));
   }
   return this._nonSinkContainers;
 };
