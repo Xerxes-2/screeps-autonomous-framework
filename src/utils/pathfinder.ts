@@ -4,6 +4,9 @@
  */
 
 export function travelTo(creep: Creep, goalRoom: string, ops = 2000) {
+  if (creep.room.name === goalRoom && creep.pos.inRangeTo(25, 25, 23)) {
+    return false;
+  }
   const pfResult = PathFinder.search(
     creep.pos,
     { pos: new RoomPosition(25, 25, goalRoom), range: 24 },
