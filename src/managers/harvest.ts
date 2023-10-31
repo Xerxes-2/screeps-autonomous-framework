@@ -104,7 +104,7 @@ export class HarvestManager extends Manager {
         order.body.push(CARRY, CARRY);
       }
       if (room.name === sourceRoom) {
-        order.priority = Priority.Important;
+        order.priority = Priority.Critical;
       } else {
         order.priority = Priority.Standard;
       }

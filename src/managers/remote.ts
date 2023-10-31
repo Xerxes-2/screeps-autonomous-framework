@@ -76,7 +76,7 @@ export class RemoteManager extends Manager {
   private orderRemoteBuilder(homeroom: Room, remoteRoom: Room): void {
     const constructionSites = remoteRoom.getConstructionSites();
     const containers = remoteRoom.getContainers();
-    if (constructionSites.length === 0 && containers.every(c => c.hits >= 150_000)) {
+    if (constructionSites.length === 0 && containers.every(c => c.hits >= 100_000)) {
       return;
     }
 

@@ -51,8 +51,7 @@ function runHaulEnergy(creep: Creep) {
   }
   // energy on ground
   const drops = creep.room.getDroppedEnergy();
-  const drop = drops.filter(d => d.amount >= creep.store.getFreeCapacity(RESOURCE_ENERGY));
-  const largestDrop = _.sortBy(drop, d => d.amount).pop();
+  const largestDrop = _.sortBy(drops, d => d.amount).pop();
   if (largestDrop) {
     if (creep.pickup(largestDrop) === OK) {
       return;
@@ -67,7 +66,11 @@ function runHaulEnergy(creep: Creep) {
 
   target ??= homeroom
     .getAllTanks()
-    .filter(sink => sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY))
+    .filter(
+      sink =>
+        sink.structureType === STRUCTURE_CONTAINER &&
+        sink.store.getUsedCapacity(RESOURCE_ENERGY) >= creep.store.getFreeCapacity(RESOURCE_ENERGY)
+    )
     .sort((a, b) => {
       const aFree = a.store.getFreeCapacity(RESOURCE_ENERGY);
       const bFree = b.store.getFreeCapacity(RESOURCE_ENERGY);
@@ -90,6 +93,8 @@ function runHaulEnergy(creep: Creep) {
     if (creep.withdraw(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       moveTo(creep, target, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
+  } else {
+    creep.setState(State.TransferEnergy);
   }
 }
 

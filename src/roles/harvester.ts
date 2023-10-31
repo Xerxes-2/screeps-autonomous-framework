@@ -65,7 +65,9 @@ function runTransferEnergy(creep: Creep) {
   }
   const link = getTargetLink(creep);
   if (link) {
-    creep.transfer(link, RESOURCE_ENERGY);
+    if (creep.transfer(link, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+      moveTo(creep, link, { visualizePathStyle: { stroke: '#ffaa00' } });
+    }
     return;
   }
   creep.say('No Link');

@@ -35,7 +35,10 @@ export class LinkManager extends Manager {
       return;
     }
     for (const sourceLink of sourceLinks) {
-      if (!sourceLink.store.getFreeCapacity(RESOURCE_ENERGY) && !storageLink.store.getUsedCapacity(RESOURCE_ENERGY)) {
+      if (
+        sourceLink.store.getFreeCapacity(RESOURCE_ENERGY) === 0 &&
+        storageLink.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+      ) {
         sourceLink.transferEnergy(storageLink);
       }
     }
