@@ -88,7 +88,7 @@ export class HarvestManager extends Manager {
 
     if (active + ordered === 0) {
       const order = new Order();
-      let maxTier = getMaxTierHarvester(room.energyCapacityAvailable);
+      let maxTier = getMaxTierHarvester(room.energyAvailable);
       if (room.energyCapacityAvailable < 750 && room.energyCapacityAvailable >= 550) {
         order.body = getRCL2HarvesterBody();
         maxTier = 1;
@@ -99,7 +99,7 @@ export class HarvestManager extends Manager {
       if (
         sourceRoomObj &&
         sourceRoomObj.getSourceTanks(sourceId as Id<Source>).some(t => t.structureType === STRUCTURE_LINK) &&
-        room.energyCapacityAvailable >= 850
+        room.energyAvailable >= 850
       ) {
         order.body.push(CARRY, CARRY);
       }

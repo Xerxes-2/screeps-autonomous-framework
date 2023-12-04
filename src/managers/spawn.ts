@@ -2,7 +2,7 @@ import { Order } from 'classes/order';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
 import { RoomService } from 'services/room';
-import { verbose } from 'utils/log';
+import { verbose, warning } from 'utils/log';
 import { getUniqueId } from 'utils/order';
 
 /**
@@ -59,8 +59,8 @@ export class SpawnManager extends Manager {
     if (status === OK) {
       verbose(`Spawned: ${Role[order.memory.role]} (${order.memory.target}) - ${name}`, spawn.room.name);
     } else {
-      // Log.warning(`Unable to spawn ${Role[order.memory.role]} (status code: ${status})`, spawn.room.name);
-      room.memory.orders.unshift(order);
+      warning(`Unable to spawn ${Role[order.memory.role]} (status code: ${status})`, spawn.room.name);
+      // room.memory.orders.unshift(order);
     }
   }
 }

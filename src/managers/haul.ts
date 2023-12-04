@@ -54,7 +54,7 @@ export class HaulManager extends Manager {
 
     if (active + ordered < 2) {
       const order = new Order();
-      const maxTier = getMaxTierHauler(room.energyCapacityAvailable);
+      const maxTier = getMaxTierHauler(room.energyAvailable);
       order.body = getHaulerBody(maxTier);
       order.priority = Priority.Important;
       order.memory = {

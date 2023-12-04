@@ -3,8 +3,8 @@
  * @module
  */
 
-const SIMPLE_WORKER_MAX_TIER = 16;
-const HEAVY_WORKER_MAX_TIER = 12;
+const SIMPLE_WORKER_MAX_TIER = 10;
+const HEAVY_WORKER_MAX_TIER = 8;
 const HAULER_MAX_TIER = 16;
 const CLAIMER_MAX_TIER = 1;
 const HARVESTER_MAX_TIER = 3;

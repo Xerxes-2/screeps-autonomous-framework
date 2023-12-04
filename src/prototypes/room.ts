@@ -117,11 +117,7 @@ Room.prototype.getRemoteRooms = function () {
   if (!this._remoteRooms) {
     this._remoteRooms = [];
     for (const roomName of Object.values(Game.map.describeExits(this.name))) {
-      if (roomName !== 'E5S38') this._remoteRooms.push(roomName);
-    }
-    // hard code remote rooms
-    if (this.name === 'E5S37') {
-      this._remoteRooms.push('E4S37');
+      if (roomName !== 'E4S36' && roomName !== 'E4S34') this._remoteRooms.push(roomName);
     }
   }
   return this._remoteRooms;

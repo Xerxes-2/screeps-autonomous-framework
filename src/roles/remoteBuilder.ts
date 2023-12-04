@@ -65,7 +65,7 @@ function runBuildConstruction(creep: Creep) {
   const constructionSite = creep.room.getConstructionSites()?.[0];
   if (constructionSite) {
     if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
+      creep.moveTo(constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   } else {
     creep.say('🔧Repair');

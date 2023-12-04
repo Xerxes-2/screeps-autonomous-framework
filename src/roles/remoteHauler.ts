@@ -80,7 +80,7 @@ function runHaulEnergy(creep: Creep) {
       return;
     }
     if (creep.withdraw(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      moveTo(creep, target, { visualizePathStyle: { stroke: '#ffaa00' } });
+      creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   }
 }
